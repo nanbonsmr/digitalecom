@@ -54,19 +54,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      // Try to find existing cart
-      const { data: existingCart, error: fetchError } = await supabase
+      // Try to find existing carts (may have multiple due to race conditions)
+      const { data: existingCarts, error: fetchError } = await supabase
         .from("carts")
         .select("id")
         .eq("user_id", user.id)
-        .maybeSingle();
+        .order("created_at", { ascending: true });
 
       if (fetchError) throw fetchError;
 
       let currentCartId: string;
 
-      if (existingCart) {
-        currentCartId = existingCart.id;
+      if (existingCarts && existingCarts.length > 0) {
+        // Use the first (oldest) cart
+        currentCartId = existingCarts[0].id;
       } else {
         // Create new cart
         const { data: newCart, error: createError } = await supabase
