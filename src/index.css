@@ -167,6 +167,10 @@
     background: var(--gradient-hero);
   }
 
+  .dark .hero-gradient {
+    background: transparent;
+  }
+
   /* Dark gradient for footer/CTAs */
   .dark-gradient {
     background: var(--gradient-dark);
