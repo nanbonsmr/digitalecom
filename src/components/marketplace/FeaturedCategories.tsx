@@ -82,23 +82,23 @@ const FeaturedCategories = () => {
   };
 
   return (
-    <section className="py-16 lg:py-20 bg-secondary/30">
-      <div className="container">
+    <section className="py-10 md:py-16 lg:py-20 bg-secondary/30">
+      <div className="container px-4">
         {/* Header */}
-        <div className="text-center mb-10">
-          <span className="text-sm font-medium text-primary uppercase tracking-wide">
+        <div className="text-center mb-6 md:mb-10">
+          <span className="text-xs md:text-sm font-medium text-primary uppercase tracking-wide">
             Browse by Category
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mt-2">
             Find What You Need
           </h2>
-          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+          <p className="text-sm md:text-base text-muted-foreground mt-2 md:mt-3 max-w-2xl mx-auto">
             Explore our curated collection of premium digital assets across popular categories
           </p>
         </div>
 
         {/* Category Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
           {categoryConfigs.map((category) => (
             <Card
               key={category.label}
@@ -113,14 +113,14 @@ const FeaturedCategories = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
               </AspectRatio>
-              <CardContent className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                <h3 className="font-semibold text-sm md:text-base truncate">
+              <CardContent className="absolute bottom-0 left-0 right-0 p-2 md:p-3 text-white">
+                <h3 className="font-semibold text-xs sm:text-sm md:text-base truncate">
                   {category.label}
                 </h3>
                 {isLoading ? (
-                  <Skeleton className="h-3 w-16 bg-white/20" />
+                  <Skeleton className="h-3 w-12 md:w-16 bg-white/20" />
                 ) : (
-                  <p className="text-xs text-white/80">
+                  <p className="text-[10px] md:text-xs text-white/80">
                     {categoryCounts[category.dbCategory] || 0} products
                   </p>
                 )}

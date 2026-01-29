@@ -66,44 +66,44 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="py-16 lg:py-20 bg-primary/5 border-y border-border">
-      <div className="container">
+    <section className="py-10 md:py-16 lg:py-20 bg-primary/5 border-y border-border">
+      <div className="container px-4">
         <div className="max-w-2xl mx-auto text-center">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-6">
-            <Mail className="h-8 w-8 text-primary" />
+          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-primary/10 mb-4 md:mb-6">
+            <Mail className="h-6 w-6 md:h-8 md:w-8 text-primary" />
           </div>
 
           {/* Header */}
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-3 md:mb-4">
             Stay in the Loop
           </h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-sm md:text-lg text-muted-foreground mb-6 md:mb-8 px-4">
             Get notified about new products, exclusive deals, and creator tips. 
             No spam, unsubscribe anytime.
           </p>
 
           {/* Form */}
           {isSubscribed ? (
-            <div className="flex items-center justify-center gap-3 p-6 bg-success/10 rounded-2xl border border-success/20">
-              <CheckCircle className="h-6 w-6 text-success" />
-              <p className="text-foreground font-medium">
+            <div className="flex items-center justify-center gap-2 md:gap-3 p-4 md:p-6 bg-success/10 rounded-xl md:rounded-2xl border border-success/20">
+              <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-success shrink-0" />
+              <p className="text-foreground font-medium text-sm md:text-base">
                 You're all set! Check your inbox for a welcome message.
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto px-4 sm:px-0">
               <Input
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 px-4 rounded-xl bg-card border-2 border-border focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
+                className="h-11 md:h-12 px-4 rounded-xl bg-card border-2 border-border focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
                 required
               />
               <Button 
                 type="submit" 
-                className="h-12 px-6 btn-gradient-primary rounded-xl whitespace-nowrap"
+                className="h-11 md:h-12 px-5 md:px-6 btn-gradient-primary rounded-xl whitespace-nowrap"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -119,17 +119,17 @@ const NewsletterSection = () => {
           )}
 
           {/* Trust badges */}
-          <div className="flex items-center justify-center gap-6 mt-8 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-6 md:mt-8 text-xs md:text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-4 w-4 text-success" />
+              <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-success" />
               Free forever
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-4 w-4 text-success" />
+              <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-success" />
               No spam
             </span>
             <span className="flex items-center gap-1.5">
-              <CheckCircle className="h-4 w-4 text-success" />
+              <CheckCircle className="h-3.5 w-3.5 md:h-4 md:w-4 text-success" />
               Unsubscribe anytime
             </span>
           </div>

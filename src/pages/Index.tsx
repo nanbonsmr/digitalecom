@@ -196,40 +196,40 @@ const Index = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="hero-gradient py-16 lg:py-24 overflow-hidden">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <section className="hero-gradient py-10 md:py-16 lg:py-24 overflow-hidden">
+        <div className="container px-4">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="space-y-8 text-center lg:text-left">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
-                  <Zap className="h-4 w-4" />
+            <div className="space-y-6 md:space-y-8 text-center lg:text-left">
+              <div className="space-y-3 md:space-y-4">
+                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium">
+                  <Zap className="h-3 w-3 md:h-4 md:w-4" />
                   Trusted by {formatNumber(stats.totalSellers * 1000)} creators
                 </div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                   Buy & Download{" "}
                   <span className="text-primary">Premium Digital Assets</span> Instantly
                 </h1>
-                <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0">
+                <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0">
                   PDFs, ZIP packs, templates, UI kits, ebooks, and tools for creators and
                   businesses. Start building faster today.
                 </p>
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                 <Button 
                   size="lg" 
-                  className="btn-gradient-primary rounded-full px-8 h-12 text-base"
+                  className="btn-gradient-primary rounded-full px-6 md:px-8 h-11 md:h-12 text-sm md:text-base"
                   onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Browse Products
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5 ml-2" />
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="rounded-full px-8 h-12 text-base border-2 hover:bg-secondary"
+                  className="rounded-full px-6 md:px-8 h-11 md:h-12 text-sm md:text-base border-2 hover:bg-secondary"
                   onClick={() => navigate('/seller')}
                 >
                   Start Selling
@@ -237,32 +237,32 @@ const Index = () => {
               </div>
 
               {/* Stats */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 pt-4">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-8 pt-2 md:pt-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Download className="h-5 w-5 text-primary" />
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Download className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">{formatNumber(stats.totalDownloads)}</p>
-                    <p className="text-sm text-muted-foreground">Downloads</p>
+                    <p className="font-bold text-sm md:text-base text-foreground">{formatNumber(stats.totalDownloads)}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">Downloads</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Package className="h-5 w-5 text-primary" />
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Package className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">{formatNumber(stats.totalProducts)}</p>
-                    <p className="text-sm text-muted-foreground">Products</p>
+                    <p className="font-bold text-sm md:text-base text-foreground">{formatNumber(stats.totalProducts)}</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">Products</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-primary" />
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">{stats.totalSellers}+</p>
-                    <p className="text-sm text-muted-foreground">Sellers</p>
+                    <p className="font-bold text-sm md:text-base text-foreground">{stats.totalSellers}+</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">Sellers</p>
                   </div>
                 </div>
               </div>
@@ -298,27 +298,27 @@ const Index = () => {
       <FeaturedCategories />
 
       {/* Featured Products Section */}
-      <section id="products" className="py-16 lg:py-20">
-        <div className="container">
+      <section id="products" className="py-10 md:py-16 lg:py-20">
+        <div className="container px-4">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-10">
             <div>
-              <span className="text-sm font-medium text-primary uppercase tracking-wide">
+              <span className="text-xs md:text-sm font-medium text-primary uppercase tracking-wide">
                 Featured Products
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mt-1 md:mt-2">
                 Top Picks for You
               </h2>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
               {sortOptions.map((option, index) => (
                 <Button
                   key={option}
                   variant={index === 0 ? "default" : "ghost"}
                   size="sm"
-                  className={index === 0 ? "btn-gradient-primary rounded-full" : "rounded-full"}
+                  className={`text-xs md:text-sm px-2.5 md:px-4 ${index === 0 ? "btn-gradient-primary rounded-full" : "rounded-full"}`}
                 >
-                  {index === 0 && <TrendingUp className="h-4 w-4 mr-1.5" />}
+                  {index === 0 && <TrendingUp className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-1.5" />}
                   {option}
                 </Button>
               ))}
@@ -326,7 +326,7 @@ const Index = () => {
           </div>
 
           {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {isLoadingProducts ? (
               // Loading skeletons
               [...Array(8)].map((_, i) => (
@@ -380,11 +380,11 @@ const Index = () => {
           </div>
 
           {/* View All Button */}
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 md:mt-12">
             <Button 
               variant="outline" 
               size="lg" 
-              className="rounded-full px-8"
+              className="rounded-full px-6 md:px-8 text-sm md:text-base"
               onClick={() => navigate('/products')}
             >
               View All Products
@@ -396,18 +396,18 @@ const Index = () => {
 
 
       {/* Why Choose Us */}
-      <section className="py-16 lg:py-20">
-        <div className="container">
-          <div className="text-center mb-12">
-            <span className="text-sm font-medium text-primary uppercase tracking-wide">
+      <section className="py-10 md:py-16 lg:py-20">
+        <div className="container px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <span className="text-xs md:text-sm font-medium text-primary uppercase tracking-wide">
               Why DigitalHub
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mt-1 md:mt-2">
               Built for Creators & Businesses
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             <FeatureCard
               icon={Download}
               title="Instant Download"
@@ -433,60 +433,60 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 lg:py-20 bg-secondary/50">
-        <div className="container">
-          <div className="text-center mb-12">
-            <span className="text-sm font-medium text-primary uppercase tracking-wide">
+      <section className="py-10 md:py-16 lg:py-20 bg-secondary/50">
+        <div className="container px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <span className="text-xs md:text-sm font-medium text-primary uppercase tracking-wide">
               Simple Process
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">How It Works</h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mt-1 md:mt-2">How It Works</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
             {/* Step 1 */}
             <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
-                  <Search className="h-8 w-8 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className="relative mb-4 md:mb-6">
+                <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center mx-auto transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
+                  <Search className="h-6 w-6 md:h-8 md:w-8 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
-                <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary text-primary-foreground text-xs md:text-sm font-bold flex items-center justify-center">
                   1
                 </span>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Browse Products</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-base md:text-xl font-semibold text-foreground mb-1 md:mb-2">Browse Products</h3>
+              <p className="text-xs md:text-base text-muted-foreground">
                 Explore our curated collection of premium digital products.
               </p>
             </div>
 
             {/* Step 2 */}
             <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
-                  <CreditCard className="h-8 w-8 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className="relative mb-4 md:mb-6">
+                <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center mx-auto transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
+                  <CreditCard className="h-6 w-6 md:h-8 md:w-8 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
-                <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary text-primary-foreground text-xs md:text-sm font-bold flex items-center justify-center">
                   2
                 </span>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Pay Securely</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-base md:text-xl font-semibold text-foreground mb-1 md:mb-2">Pay Securely</h3>
+              <p className="text-xs md:text-base text-muted-foreground">
                 Complete your purchase with our secure checkout system.
               </p>
             </div>
 
             {/* Step 3 */}
             <div className="text-center group">
-              <div className="relative mb-6">
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
-                  <Download className="h-8 w-8 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className="relative mb-4 md:mb-6">
+                <div className="w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center mx-auto transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
+                  <Download className="h-6 w-6 md:h-8 md:w-8 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
-                <span className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary text-primary-foreground text-xs md:text-sm font-bold flex items-center justify-center">
                   3
                 </span>
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">Download Instantly</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-base md:text-xl font-semibold text-foreground mb-1 md:mb-2">Download Instantly</h3>
+              <p className="text-xs md:text-base text-muted-foreground">
                 Get immediate access to your files and start using them.
               </p>
             </div>
@@ -495,18 +495,18 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 lg:py-20">
-        <div className="container">
-          <div className="text-center mb-12">
-            <span className="text-sm font-medium text-primary uppercase tracking-wide">
+      <section className="py-10 md:py-16 lg:py-20">
+        <div className="container px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <span className="text-xs md:text-sm font-medium text-primary uppercase tracking-wide">
               Testimonials
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mt-1 md:mt-2">
               What Our Customers Say
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             {testimonials.map((testimonial) => (
               <TestimonialCard key={testimonial.name} {...testimonial} />
             ))}
@@ -515,44 +515,44 @@ const Index = () => {
       </section>
 
       {/* Seller CTA Section */}
-      <section id="seller" className="py-16 lg:py-24 dark-gradient text-center">
-        <div className="container">
-          <div className="max-w-3xl mx-auto space-y-8">
-            <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-1.5 rounded-full text-sm font-medium">
-              <DollarSign className="h-4 w-4" />
+      <section id="seller" className="py-12 md:py-16 lg:py-24 dark-gradient text-center">
+        <div className="container px-4">
+          <div className="max-w-3xl mx-auto space-y-5 md:space-y-8">
+            <div className="inline-flex items-center gap-2 bg-white/10 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium">
+              <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
               Start earning today
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-white leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
               Sell Your Digital Products & Earn Online
             </h2>
-            <p className="text-lg text-white/70">
+            <p className="text-sm md:text-lg text-white/70 px-4">
               Join {stats.totalSellers}+ creators who are already earning on DigitalHub. Turn your expertise into
               income.
             </p>
 
             {/* Benefits */}
-            <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <div className="flex items-center gap-2 text-white/90">
-                <Upload className="h-5 w-5 text-primary" />
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6 pt-2 md:pt-4 text-xs md:text-base">
+              <div className="flex items-center gap-1.5 md:gap-2 text-white/90">
+                <Upload className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                 <span>Upload products easily</span>
               </div>
-              <div className="flex items-center gap-2 text-white/90">
-                <DollarSign className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-1.5 md:gap-2 text-white/90">
+                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                 <span>Set your own price</span>
               </div>
-              <div className="flex items-center gap-2 text-white/90">
-                <BarChart3 className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-1.5 md:gap-2 text-white/90">
+                <BarChart3 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                 <span>Track sales in dashboard</span>
               </div>
             </div>
 
             <Button
               size="lg"
-              className="btn-gradient-accent rounded-full px-10 h-14 text-lg font-semibold mt-4"
+              className="btn-gradient-accent rounded-full px-6 md:px-10 h-11 md:h-14 text-sm md:text-lg font-semibold mt-2 md:mt-4"
               onClick={() => navigate('/seller')}
             >
               Become a Seller
-              <ArrowRight className="h-5 w-5 ml-2" />
+              <ArrowRight className="h-4 w-4 md:h-5 md:w-5 ml-2" />
             </Button>
           </div>
         </div>
