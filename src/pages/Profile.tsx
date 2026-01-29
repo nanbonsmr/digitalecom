@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Save, User, Mail, Store, FileText, Loader2, Clock, CheckCircle } from "lucide-react";
+import { ArrowLeft, Camera, Save, User, Mail, FileText, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +22,6 @@ const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [isRequestingSellerStatus, setIsRequestingSellerStatus] = useState(false);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -147,36 +145,6 @@ const Profile = () => {
     }
   };
 
-  const handleRequestSellerStatus = async () => {
-    if (!user) return;
-
-    setIsRequestingSellerStatus(true);
-
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ seller_request_pending: true })
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-
-      await refreshProfile();
-
-      toast({
-        title: "Request submitted",
-        description: "Your seller application has been submitted for review.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Request failed",
-        description: error.message || "Failed to submit request.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRequestingSellerStatus(false);
-    }
-  };
-
   const getInitials = () => {
     if (displayName) {
       return displayName.charAt(0).toUpperCase();
@@ -194,9 +162,6 @@ const Profile = () => {
       </div>
     );
   }
-
-  const isSeller = profile?.is_seller;
-  const isPending = profile?.seller_request_pending;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background py-8 px-4">
@@ -307,63 +272,6 @@ const Profile = () => {
                 <p className="text-xs text-muted-foreground text-right">
                   {bio.length}/500
                 </p>
-              </div>
-
-              {/* Seller Status Section */}
-              <div className="p-4 rounded-lg border border-border bg-secondary/30">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Store className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">Seller Status</p>
-                    <p className="text-sm text-muted-foreground">
-                      Sell your digital products on our marketplace
-                    </p>
-                  </div>
-                </div>
-
-                {isSeller ? (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-success/10 border border-success/20">
-                    <CheckCircle className="h-5 w-5 text-success" />
-                    <div>
-                      <p className="font-medium text-success">You are a verified seller</p>
-                      <p className="text-sm text-muted-foreground">
-                        Access your <Button variant="link" className="h-auto p-0 text-primary" onClick={() => navigate("/seller")}>Seller Dashboard</Button>
-                      </p>
-                    </div>
-                  </div>
-                ) : isPending ? (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                    <Clock className="h-5 w-5 text-amber-500" />
-                    <div>
-                      <p className="font-medium text-amber-600">Application pending</p>
-                      <p className="text-sm text-muted-foreground">
-                        Your seller application is being reviewed by an admin.
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleRequestSellerStatus}
-                    disabled={isRequestingSellerStatus}
-                  >
-                    {isRequestingSellerStatus ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <Store className="h-4 w-4 mr-2" />
-                        Apply to become a Seller
-                      </>
-                    )}
-                  </Button>
-                )}
               </div>
 
               {/* Submit Button */}

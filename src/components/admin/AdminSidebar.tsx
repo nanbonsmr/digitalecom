@@ -19,16 +19,12 @@ interface AdminSidebarProps {
   onToggle: () => void;
   activeSection: string;
   onSectionChange: (section: string) => void;
-  pendingProducts?: number;
-  pendingRequests?: number;
 }
 
 const menuItems = [
   { id: "overview", label: "Dashboard Overview", icon: LayoutDashboard },
-  { id: "products", label: "Product Moderation", icon: FileCheck, badgeKey: "pendingProducts" },
-  { id: "users", label: "All Users", icon: Users },
-  { id: "sellers", label: "Sellers", icon: Store },
-  { id: "requests", label: "Seller Requests", icon: ShieldCheck, badgeKey: "pendingRequests" },
+  { id: "products", label: "My Products", icon: FileCheck },
+  { id: "users", label: "Customers", icon: Users },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
@@ -37,16 +33,8 @@ export const AdminSidebar = ({
   onToggle,
   activeSection,
   onSectionChange,
-  pendingProducts = 0,
-  pendingRequests = 0,
 }: AdminSidebarProps) => {
   const { signOut } = useAuth();
-
-  const getBadgeCount = (badgeKey?: string) => {
-    if (badgeKey === "pendingProducts") return pendingProducts;
-    if (badgeKey === "pendingRequests") return pendingRequests;
-    return 0;
-  };
 
   return (
     <aside
@@ -60,9 +48,9 @@ export const AdminSidebar = ({
         {!isCollapsed && (
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <ShieldCheck className="h-5 w-5 text-primary-foreground" />
+              <Store className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-lg text-foreground">Admin Panel</span>
+            <span className="font-bold text-lg text-foreground">My Store</span>
           </Link>
         )}
         <Button
@@ -81,38 +69,22 @@ export const AdminSidebar = ({
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
-          const badgeCount = getBadgeCount(item.badgeKey);
-          return (
-            <button
-              key={item.id}
-              onClick={() => onSectionChange(item.id)}
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative",
-                activeSection === item.id
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                isCollapsed && "justify-center px-2"
-              )}
-            >
-              <item.icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && <span className="flex-1 text-left">{item.label}</span>}
-              {badgeCount > 0 && (
-                <span
-                  className={cn(
-                    "h-5 min-w-5 px-1.5 rounded-full text-xs flex items-center justify-center font-medium",
-                    activeSection === item.id
-                      ? "bg-primary-foreground text-primary"
-                      : "bg-primary text-primary-foreground",
-                    isCollapsed && "absolute -top-1 -right-1"
-                  )}
-                >
-                  {badgeCount}
-                </span>
-              )}
-            </button>
-          );
-        })}
+        {menuItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onSectionChange(item.id)}
+            className={cn(
+              "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              activeSection === item.id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              isCollapsed && "justify-center px-2"
+            )}
+          >
+            <item.icon className="h-5 w-5 flex-shrink-0" />
+            {!isCollapsed && <span className="flex-1 text-left">{item.label}</span>}
+          </button>
+        ))}
       </nav>
 
       {/* Back to Marketplace & Logout */}

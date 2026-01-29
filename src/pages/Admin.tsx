@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Loader2, Menu, Bell, Search } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Loader2, Menu, Bell, Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,35 +16,22 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import AdminSidebar from "@/components/admin/AdminSidebar";
-import AdminOverviewSection from "@/components/admin/AdminOverviewSection";
-import ProductModerationSection from "@/components/admin/ProductModerationSection";
-import UsersSection from "@/components/admin/UsersSection";
-import SellersSection from "@/components/admin/SellersSection";
-import SellerRequestsSection from "@/components/admin/SellerRequestsSection";
-import { Link } from "react-router-dom";
+import StoreOverviewSection from "@/components/admin/StoreOverviewSection";
+import StoreProductsSection from "@/components/admin/StoreProductsSection";
+import CustomersSection from "@/components/admin/CustomersSection";
 
 interface Profile {
   id: string;
   user_id: string;
   display_name: string | null;
   avatar_url: string | null;
-  is_seller: boolean | null;
-  seller_request_pending: boolean | null;
-  bio: string | null;
   created_at: string;
 }
 
-interface UserRole {
-  user_id: string;
-  role: "admin" | "moderator" | "user";
-}
-
 interface Stats {
-  totalUsers: number;
-  totalSellers: number;
+  totalCustomers: number;
   totalProducts: number;
-  pendingRequests: number;
-  pendingProducts: number;
+  publishedProducts: number;
 }
 
 const Admin = () => {
@@ -55,13 +42,10 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [stats, setStats] = useState<Stats>({
-    totalUsers: 0,
-    totalSellers: 0,
+    totalCustomers: 0,
     totalProducts: 0,
-    pendingRequests: 0,
-    pendingProducts: 0,
+    publishedProducts: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -103,7 +87,7 @@ const Admin = () => {
         navigate("/");
         toast({
           title: "Access Denied",
-          description: "You don't have permission to access the admin panel.",
+          description: "You don't have permission to access the store dashboard.",
           variant: "destructive",
         });
       }
@@ -120,42 +104,33 @@ const Admin = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Fetch all profiles
+      // Fetch all customer profiles (excluding admin)
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, user_id, display_name, avatar_url, created_at")
         .order("created_at", { ascending: false });
 
       if (profilesError) throw profilesError;
-      setProfiles(profilesData || []);
+      
+      // Filter out admin user from customers
+      const customers = profilesData?.filter(p => p.user_id !== user?.id) || [];
+      setProfiles(customers);
 
-      // Fetch user roles
-      const { data: rolesData, error: rolesError } = await supabase
-        .from("user_roles")
-        .select("user_id, role");
-
-      if (rolesError) throw rolesError;
-      setUserRoles(rolesData || []);
-
-      // Fetch stats
+      // Fetch product stats
       const { count: productCount } = await supabase
         .from("products")
         .select("*", { count: "exact", head: true });
 
-      const { count: pendingProductCount } = await supabase
+      const { count: publishedCount } = await supabase
         .from("products")
         .select("*", { count: "exact", head: true })
-        .eq("moderation_status", "pending");
-
-      const sellers = profilesData?.filter((p) => p.is_seller) || [];
-      const pending = profilesData?.filter((p) => p.seller_request_pending) || [];
+        .eq("is_published", true)
+        .eq("moderation_status", "approved");
 
       setStats({
-        totalUsers: profilesData?.length || 0,
-        totalSellers: sellers.length,
+        totalCustomers: customers.length,
         totalProducts: productCount || 0,
-        pendingRequests: pending.length,
-        pendingProducts: pendingProductCount || 0,
+        publishedProducts: publishedCount || 0,
       });
     } catch (error: any) {
       toast({
@@ -189,8 +164,6 @@ const Admin = () => {
           onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           activeSection={activeSection}
           onSectionChange={setActiveSection}
-          pendingProducts={stats.pendingProducts}
-          pendingRequests={stats.pendingRequests}
         />
       </div>
 
@@ -205,8 +178,6 @@ const Admin = () => {
               setActiveSection(section);
               setIsMobileSidebarOpen(false);
             }}
-            pendingProducts={stats.pendingProducts}
-            pendingRequests={stats.pendingRequests}
           />
         </SheetContent>
       </Sheet>
@@ -232,9 +203,9 @@ const Admin = () => {
 
             {/* Page Title */}
             <div className="hidden sm:block">
-              <h1 className="text-xl font-semibold text-foreground">Admin Panel</h1>
+              <h1 className="text-xl font-semibold text-foreground">Store Dashboard</h1>
               <p className="text-sm text-muted-foreground">
-                Welcome back, {profile?.display_name || "Admin"}! 👋
+                Welcome back, {profile?.display_name || "Owner"}! 👋
               </p>
             </div>
 
@@ -243,7 +214,7 @@ const Admin = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search users or products..."
+                  placeholder="Search products or customers..."
                   className="pl-10 h-10 rounded-full bg-muted/50 border-0"
                 />
               </div>
@@ -251,11 +222,12 @@ const Admin = () => {
 
             {/* Right Actions */}
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                {(stats.pendingProducts > 0 || stats.pendingRequests > 0) && (
-                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
-                )}
+              <Button 
+                className="btn-gradient-primary"
+                onClick={() => setActiveSection("products")}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Product
               </Button>
 
               <DropdownMenu>
@@ -264,14 +236,14 @@ const Admin = () => {
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="bg-primary text-primary-foreground">
-                        {profile?.display_name?.charAt(0) || "A"}
+                        {profile?.display_name?.charAt(0) || "O"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5">
-                    <p className="font-medium">{profile?.display_name || "Admin"}</p>
+                    <p className="font-medium">{profile?.display_name || "Store Owner"}</p>
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
@@ -279,7 +251,7 @@ const Admin = () => {
                     <Link to="/profile">Profile Settings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/">Back to Marketplace</Link>
+                    <Link to="/">View Storefront</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -290,41 +262,17 @@ const Admin = () => {
         {/* Dashboard Content */}
         <main className="p-4 lg:p-6">
           {activeSection === "overview" && (
-            <AdminOverviewSection stats={stats} onNavigate={setActiveSection} />
+            <StoreOverviewSection stats={stats} onNavigate={setActiveSection} />
           )}
 
           {activeSection === "products" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Product Moderation</h2>
-                <p className="text-muted-foreground">Review and approve products</p>
-              </div>
-              <ProductModerationSection onProductModerated={fetchData} />
-            </div>
+            <StoreProductsSection onProductChange={fetchData} />
           )}
 
           {activeSection === "users" && (
-            <UsersSection
-              profiles={profiles}
-              userRoles={userRoles}
-              isLoading={isLoading}
-              onDataChange={fetchData}
-            />
-          )}
-
-          {activeSection === "sellers" && (
-            <SellersSection
+            <CustomersSection
               profiles={profiles}
               isLoading={isLoading}
-              onDataChange={fetchData}
-            />
-          )}
-
-          {activeSection === "requests" && (
-            <SellerRequestsSection
-              profiles={profiles}
-              isLoading={isLoading}
-              onDataChange={fetchData}
             />
           )}
 
@@ -332,7 +280,7 @@ const Admin = () => {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">Settings</h2>
-                <p className="text-muted-foreground">Platform configuration</p>
+                <p className="text-muted-foreground">Store configuration</p>
               </div>
               <div className="bg-card rounded-2xl border border-border/50 p-8 text-center">
                 <p className="text-muted-foreground">Settings section coming soon...</p>
