@@ -205,6 +205,7 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         file_url: fileUrl || null,
         is_free: isFree,
         is_published: isPublished,
+        moderation_status: 'approved' as const,
       };
 
       if (product) {
