@@ -522,51 +522,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Seller CTA Section */}
-      <section id="seller" className="py-12 md:py-16 lg:py-24 dark-gradient text-center">
-        <div className="container px-4">
-          <div className="max-w-3xl mx-auto space-y-5 md:space-y-8">
-            <div className="inline-flex items-center gap-2 bg-white/10 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium">
-              <DollarSign className="h-3 w-3 md:h-4 md:w-4" />
-              Start earning today
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight">
-              Sell Your Digital Products & Earn Online
-            </h2>
-            <p className="text-sm md:text-lg text-white/70 px-4">
-              Join {stats.totalSellers}+ creators who are already earning on DigitalHub. Turn your expertise into
-              income.
-            </p>
-
-            {/* Benefits */}
-            <div className="flex flex-wrap justify-center gap-4 md:gap-6 pt-2 md:pt-4 text-xs md:text-base">
-              <div className="flex items-center gap-1.5 md:gap-2 text-white/90">
-                <Upload className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                <span>Upload products easily</span>
-              </div>
-              <div className="flex items-center gap-1.5 md:gap-2 text-white/90">
-                <DollarSign className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                <span>Set your own price</span>
-              </div>
-              <div className="flex items-center gap-1.5 md:gap-2 text-white/90">
-                <BarChart3 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                <span>Track sales in dashboard</span>
-              </div>
-            </div>
-
-            <Button
-              size="lg"
-              className="btn-gradient-accent rounded-full px-6 md:px-10 h-11 md:h-14 text-sm md:text-lg font-semibold mt-2 md:mt-4"
-              onClick={() => navigate('/seller')}
-            >
-              Become a Seller
-              <ArrowRight className="h-4 w-4 md:h-5 md:w-5 ml-2" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Newsletter Section */}
       <NewsletterSection />
 
