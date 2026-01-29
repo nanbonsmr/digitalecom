@@ -327,27 +327,6 @@ const ProductDetail: React.FC = () => {
 
             <Separator />
 
-            {/* Seller Info */}
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-secondary/30 border border-border">
-              <Avatar className="h-14 w-14">
-                <AvatarImage src={seller?.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                  {seller?.display_name?.charAt(0) || <User className="h-6 w-6" />}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <p className="font-medium text-foreground">
-                  {seller?.display_name || "Anonymous Seller"}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {seller?.bio || "Digital product creator"}
-                </p>
-              </div>
-              <Button variant="outline" size="sm">
-                View Profile
-              </Button>
-            </div>
-
             {/* Features */}
             <div className="space-y-3">
               <h3 className="font-semibold text-foreground">What's included:</h3>
