@@ -1,25 +1,24 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
-  ArrowLeft,
-  Plus,
-  Package,
-  DollarSign,
-  Download,
-  Eye,
-  MoreVertical,
-  Pencil,
-  Trash2,
-  ToggleLeft,
-  ToggleRight,
-  Loader2,
-  ImageIcon,
   Search,
+  Bell,
+  DollarSign,
+  ShoppingCart,
+  Package,
+  Clock,
+  Upload,
+  Wallet,
+  CreditCard,
+  Smartphone,
+  ArrowRight,
+  HelpCircle,
+  Menu,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,27 +26,49 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Sheet,
+  SheetContent,
+} from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+
+import SellerSidebar from "@/components/seller/SellerSidebar";
+import StatCard from "@/components/seller/StatCard";
+import OrderTable from "@/components/seller/OrderTable";
+import ReviewCard from "@/components/seller/ReviewCard";
+import ProductRow from "@/components/seller/ProductRow";
+import SalesChart from "@/components/seller/SalesChart";
 import ProductForm from "@/components/seller/ProductForm";
+
+// Mock data for orders and reviews
+const mockOrders = [
+  { id: "ORD-001", productName: "Premium UI Kit Bundle", buyerEmail: "john@example.com", date: "Jan 28, 2026", price: 49.99, status: "paid" as const, downloads: 3 },
+  { id: "ORD-002", productName: "Business Plan Template", buyerEmail: "sarah@company.io", date: "Jan 27, 2026", price: 29.99, status: "paid" as const, downloads: 1 },
+  { id: "ORD-003", productName: "Icon Pack Pro", buyerEmail: "mike@design.co", date: "Jan 26, 2026", price: 19.99, status: "refunded" as const, downloads: 0 },
+  { id: "ORD-004", productName: "Social Media Templates", buyerEmail: "emma@startup.com", date: "Jan 25, 2026", price: 24.99, status: "paid" as const, downloads: 2 },
+  { id: "ORD-005", productName: "Resume Builder Pack", buyerEmail: "alex@job.org", date: "Jan 24, 2026", price: 14.99, status: "pending" as const, downloads: 0 },
+];
+
+const mockReviews = [
+  { id: "1", rating: 5, comment: "Absolutely amazing templates! Saved me hours of work. The quality is outstanding.", productName: "Premium UI Kit Bundle", buyerName: "John Doe", date: "2 days ago" },
+  { id: "2", rating: 4, comment: "Great value for money. Would recommend to anyone looking for professional templates.", productName: "Business Plan Template", buyerName: "Sarah Smith", date: "3 days ago" },
+  { id: "3", rating: 5, comment: "Perfect icons, exactly what I needed for my project. Very well organized!", productName: "Icon Pack Pro", buyerName: "Mike Johnson", date: "5 days ago" },
+];
+
+const mockProducts = [
+  { id: "1", title: "Premium UI Kit Bundle", thumbnail: undefined, price: 49.99, downloads: 234, status: "active" as const },
+  { id: "2", title: "Business Plan Template", thumbnail: undefined, price: 29.99, downloads: 156, status: "active" as const },
+  { id: "3", title: "Icon Pack Pro", thumbnail: undefined, price: 19.99, downloads: 89, status: "draft" as const },
+];
 
 interface Product {
   id: string;
@@ -64,49 +85,43 @@ interface Product {
 }
 
 const SellerDashboard = () => {
-  const { user, profile, loading: authLoading } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
-
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const { user, profile, loading } = useAuth();
+  const { toast } = useToast();
+  
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [activeSection, setActiveSection] = useState("overview");
+  const [isProductFormOpen, setIsProductFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
-  // Redirect if not logged in or not a seller
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        navigate("/auth");
-      } else if (profile && !profile.is_seller) {
-        toast({
-          title: "Seller access required",
-          description: "Enable seller mode in your profile to access this page.",
-          variant: "destructive",
-        });
-        navigate("/profile");
-      }
-    }
-  }, [user, profile, authLoading, navigate, toast]);
-
-  // Fetch products
-  useEffect(() => {
-    if (user && profile?.is_seller) {
+    if (!loading && !user) {
+      navigate("/auth");
+    } else if (!loading && profile && !profile.is_seller) {
+      toast({
+        title: "Access Denied",
+        description: "Please enable seller mode in your profile to access the dashboard.",
+        variant: "destructive",
+      });
+      navigate("/profile");
+    } else if (user && profile?.is_seller) {
       fetchProducts();
     }
-  }, [user, profile]);
+  }, [user, profile, loading, navigate]);
 
   const fetchProducts = async () => {
-    setIsLoading(true);
+    if (!user) return;
+    setIsLoadingProducts(true);
     try {
       const { data, error } = await supabase
         .from("products")
         .select("*")
-        .eq("seller_id", user!.id)
+        .eq("seller_id", user.id)
         .order("created_at", { ascending: false });
-
+      
       if (error) throw error;
       setProducts(data || []);
     } catch (error: any) {
@@ -116,85 +131,39 @@ const SellerDashboard = () => {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingProducts(false);
     }
   };
 
-  const handleTogglePublish = async (product: Product) => {
-    try {
-      const { error } = await supabase
-        .from("products")
-        .update({ is_published: !product.is_published })
-        .eq("id", product.id);
-
-      if (error) throw error;
-
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === product.id ? { ...p, is_published: !p.is_published } : p
-        )
-      );
-
-      toast({
-        title: product.is_published ? "Product unpublished" : "Product published",
-        description: product.is_published
-          ? "Your product is now hidden from the marketplace."
-          : "Your product is now live on the marketplace!",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error updating product",
-        description: error.message,
-        variant: "destructive",
-      });
+  const handleEditProduct = (productId: string) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      setEditingProduct(product);
+      setIsProductFormOpen(true);
     }
   };
 
-  const handleDelete = async () => {
-    if (!deletingProduct) return;
+  const handleDeleteProduct = async (productId: string) => {
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId);
 
-    try {
-      const { error } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", deletingProduct.id);
-
-      if (error) throw error;
-
-      setProducts((prev) => prev.filter((p) => p.id !== deletingProduct.id));
-      setDeletingProduct(null);
-
-      toast({
-        title: "Product deleted",
-        description: "Your product has been permanently removed.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error deleting product",
-        description: error.message,
-        variant: "destructive",
-      });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Product deleted" });
+      fetchProducts();
     }
   };
 
-  const handleFormSuccess = () => {
-    setIsFormOpen(false);
+  const handleProductSaved = () => {
+    setIsProductFormOpen(false);
     setEditingProduct(null);
     fetchProducts();
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const stats = {
-    totalProducts: products.length,
-    publishedProducts: products.filter((p) => p.is_published).length,
-    totalDownloads: products.reduce((sum, p) => sum + p.download_count, 0),
-    totalRevenue: products.reduce((sum, p) => sum + (p.is_free ? 0 : p.price * p.download_count), 0),
-  };
-
-  if (authLoading || (profile && !profile.is_seller)) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -202,292 +171,328 @@ const SellerDashboard = () => {
     );
   }
 
+  const displayProducts = products.length > 0 ? products.map(p => ({
+    id: p.id,
+    title: p.title,
+    thumbnail: p.thumbnail_url || undefined,
+    price: p.price,
+    downloads: p.download_count || 0,
+    status: p.is_published ? "active" as const : "draft" as const,
+  })) : mockProducts;
+
+  const stats = {
+    totalSales: products.length > 0 ? products.reduce((sum, p) => sum + (p.download_count || 0), 0) : 156,
+    totalEarnings: products.length > 0 ? products.reduce((sum, p) => sum + ((p.download_count || 0) * p.price), 0) : 4523.50,
+    activeProducts: products.length > 0 ? products.filter(p => p.is_published).length : 8,
+    pendingOrders: 3,
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate("/")}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div>
-                <h1 className="text-xl font-bold">Seller Dashboard</h1>
-                <p className="text-sm text-muted-foreground">
-                  Manage your digital products
-                </p>
-              </div>
-            </div>
-            <Button
-              className="btn-gradient-primary"
-              onClick={() => {
+    <div className="min-h-screen bg-background">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <SellerSidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          activeSection={activeSection}
+          onSectionChange={(section) => {
+            setActiveSection(section);
+            if (section === "upload") {
+              setEditingProduct(null);
+              setIsProductFormOpen(true);
+            }
+          }}
+        />
+      </div>
+
+      {/* Mobile Sidebar */}
+      <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+        <SheetContent side="left" className="p-0 w-64">
+          <SellerSidebar
+            isCollapsed={false}
+            onToggle={() => {}}
+            activeSection={activeSection}
+            onSectionChange={(section) => {
+              setActiveSection(section);
+              if (section === "upload") {
                 setEditingProduct(null);
-                setIsFormOpen(true);
-              }}
+                setIsProductFormOpen(true);
+              }
+              setIsMobileSidebarOpen(false);
+            }}
+          />
+        </SheetContent>
+      </Sheet>
+
+      {/* Main Content */}
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+        }`}
+      >
+        {/* Top Header */}
+        <header className="sticky top-0 z-30 bg-card/95 backdrop-blur-md border-b border-border h-16 flex items-center px-4 lg:px-6">
+          <div className="flex items-center justify-between w-full gap-4">
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setIsMobileSidebarOpen(true)}
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Product
+              <Menu className="h-5 w-5" />
             </Button>
-          </div>
-        </div>
-      </header>
 
-      <main className="container py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Package className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.totalProducts}</p>
-                  <p className="text-sm text-muted-foreground">Total Products</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
-                  <Eye className="h-5 w-5 text-success" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.publishedProducts}</p>
-                  <p className="text-sm text-muted-foreground">Published</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <Download className="h-5 w-5 text-accent" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{stats.totalDownloads}</p>
-                  <p className="text-sm text-muted-foreground">Downloads</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
-                  <p className="text-sm text-muted-foreground">Revenue</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            {/* Page Title */}
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-semibold text-foreground">Seller Dashboard</h1>
+              <p className="text-sm text-muted-foreground">
+                Hello, {profile?.display_name || "Seller"}! 👋
+              </p>
+            </div>
 
-        {/* Products Section */}
-        <Card>
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <CardTitle>Your Products</CardTitle>
-                <CardDescription>
-                  {products.length} product{products.length !== 1 ? "s" : ""} in your catalog
-                </CardDescription>
-              </div>
-              <div className="relative w-full sm:w-64">
+            {/* Search */}
+            <div className="flex-1 max-w-md mx-4 hidden md:block">
+              <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  placeholder="Search products or orders..."
+                  className="pl-10 h-10 rounded-full bg-muted/50 border-0"
                 />
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="text-center py-12">
-                <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-medium text-lg mb-1">
-                  {searchQuery ? "No products found" : "No products yet"}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {searchQuery
-                    ? "Try a different search term"
-                    : "Start selling by adding your first product"}
-                </p>
-                {!searchQuery && (
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {profile?.display_name?.charAt(0) || "S"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5">
+                    <p className="font-medium">{profile?.display_name || "Seller"}</p>
+                    <p className="text-xs text-muted-foreground">{user?.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile Settings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/">Back to Marketplace</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </header>
+
+        {/* Dashboard Content */}
+        <main className="p-4 lg:p-6 space-y-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              title="Total Sales"
+              value={stats.totalSales}
+              icon={ShoppingCart}
+              trend={{ value: 12, isPositive: true }}
+            />
+            <StatCard
+              title="Total Earnings"
+              value={`$${stats.totalEarnings.toLocaleString()}`}
+              icon={DollarSign}
+              trend={{ value: 8, isPositive: true }}
+            />
+            <StatCard
+              title="Active Products"
+              value={stats.activeProducts}
+              icon={Package}
+              trend={{ value: 2, isPositive: true }}
+            />
+            <StatCard
+              title="Pending Orders"
+              value={stats.pendingOrders}
+              icon={Clock}
+              trend={{ value: 5, isPositive: false }}
+            />
+          </div>
+
+          {/* Sales Chart */}
+          <SalesChart />
+
+          {/* Upload CTA + Earnings Summary */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Upload CTA */}
+            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl border border-primary/20 p-6">
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <Upload className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Upload a New Digital Product
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Add PDFs, ZIP bundles, templates, and start earning today.
+                  </p>
                   <Button
+                    className="mt-4 btn-gradient-primary"
                     onClick={() => {
                       setEditingProduct(null);
-                      setIsFormOpen(true);
+                      setIsProductFormOpen(true);
                     }}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Product
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Product
                   </Button>
-                )}
+                </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-secondary/30 transition-colors"
-                  >
-                    {/* Thumbnail */}
-                    <div className="h-16 w-16 rounded-lg bg-secondary flex items-center justify-center shrink-0 overflow-hidden">
-                      {product.thumbnail_url ? (
-                        <img
-                          src={product.thumbnail_url}
-                          alt={product.title}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                      )}
-                    </div>
+            </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium truncate">{product.title}</h4>
-                        <Badge
-                          variant={product.is_published ? "default" : "secondary"}
-                          className="shrink-0"
-                        >
-                          {product.is_published ? "Published" : "Draft"}
-                        </Badge>
-                        {product.is_free && (
-                          <Badge variant="outline" className="shrink-0">
-                            Free
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{product.category}</span>
-                        <span>•</span>
-                        <span>
-                          {product.is_free ? "Free" : `$${product.price}`}
-                        </span>
-                        <span>•</span>
-                        <span>{product.download_count} downloads</span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditingProduct(product);
-                            setIsFormOpen(true);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleTogglePublish(product)}
-                        >
-                          {product.is_published ? (
-                            <>
-                              <ToggleLeft className="h-4 w-4 mr-2" />
-                              Unpublish
-                            </>
-                          ) : (
-                            <>
-                              <ToggleRight className="h-4 w-4 mr-2" />
-                              Publish
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => setDeletingProduct(product)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+            {/* Earnings Summary */}
+            <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
+                Earnings & Payout
+              </h3>
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center p-3 bg-muted/30 rounded-xl">
+                  <p className="text-2xl font-bold text-foreground">$2,450</p>
+                  <p className="text-xs text-muted-foreground mt-1">Available</p>
+                </div>
+                <div className="text-center p-3 bg-muted/30 rounded-xl">
+                  <p className="text-2xl font-bold text-foreground">$350</p>
+                  <p className="text-xs text-muted-foreground mt-1">Pending</p>
+                </div>
+                <div className="text-center p-3 bg-muted/30 rounded-xl">
+                  <p className="text-2xl font-bold text-foreground">$8,200</p>
+                  <p className="text-xs text-muted-foreground mt-1">Withdrawn</p>
+                </div>
+              </div>
+              <Button className="w-full" variant="outline">
+                <Wallet className="h-4 w-4 mr-2" />
+                Request Payout
+              </Button>
+              <Separator className="my-4" />
+              <div className="flex items-center gap-4">
+                <p className="text-sm text-muted-foreground">Payment Methods:</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                    <CreditCard className="h-4 w-4 text-muted-foreground" />
                   </div>
+                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                    <Smartphone className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Orders Table */}
+          <OrderTable
+            orders={mockOrders}
+            onViewOrder={(id) => toast({ title: `Viewing order ${id}` })}
+          />
+
+          {/* Products + Reviews Grid */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* My Products */}
+            <div className="bg-card rounded-2xl border border-border/50 shadow-sm">
+              <div className="p-6 border-b border-border flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">My Products</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Your latest digital products
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setActiveSection("products")}>
+                  View All <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+              <div className="p-4 space-y-3">
+                {isLoadingProducts ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : displayProducts.slice(0, 3).map((product) => (
+                  <ProductRow
+                    key={product.id}
+                    product={product}
+                    onEdit={handleEditProduct}
+                    onDelete={handleDeleteProduct}
+                    onView={(id) => navigate(`/product/${id}`)}
+                  />
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </main>
+            </div>
+
+            {/* Reviews */}
+            <div className="bg-card rounded-2xl border border-border/50 shadow-sm">
+              <div className="p-6 border-b border-border flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Customer Reviews</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Latest feedback from buyers
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setActiveSection("reviews")}>
+                  View All <ArrowRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+              <div className="p-4 space-y-3">
+                {mockReviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    onReply={(id) => toast({ title: `Replying to review ${id}` })}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center py-6 border-t border-border">
+            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+              <HelpCircle className="h-4 w-4" />
+              Need help? Visit the{" "}
+              <a href="#" className="text-primary hover:underline">
+                Seller Support Center
+              </a>{" "}
+              or contact us anytime.
+            </p>
+          </div>
+        </main>
+      </div>
 
       {/* Product Form Dialog */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      <Dialog open={isProductFormOpen} onOpenChange={setIsProductFormOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingProduct ? "Edit Product" : "Add New Product"}
+              {editingProduct ? "Edit Product" : "Upload New Product"}
             </DialogTitle>
-            <DialogDescription>
-              {editingProduct
-                ? "Update your product details below"
-                : "Fill in the details to list your product"}
-            </DialogDescription>
           </DialogHeader>
           <ProductForm
             product={editingProduct}
-            onSuccess={handleFormSuccess}
+            onSuccess={handleProductSaved}
             onCancel={() => {
-              setIsFormOpen(false);
+              setIsProductFormOpen(false);
               setEditingProduct(null);
             }}
           />
         </DialogContent>
       </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!deletingProduct}
-        onOpenChange={() => setDeletingProduct(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Product</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deletingProduct?.title}"? This
-              action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
