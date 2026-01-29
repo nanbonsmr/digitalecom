@@ -1,6 +1,6 @@
 import { useState, useEffect, forwardRef } from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu, X, User, LogOut, Store, ShieldCheck } from "lucide-react";
+import { Search, Menu, X, User, LogOut, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CartSheet } from "@/components/cart/CartSheet";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Navbar = forwardRef<HTMLElement>((_, ref) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -99,7 +100,10 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {/* Cart */}
             <CartSheet />
 
