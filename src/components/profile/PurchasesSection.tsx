@@ -1,8 +1,19 @@
 import { useState, useEffect } from "react";
-import { Download, Package, ExternalLink, Loader2 } from "lucide-react";
+import { Download, Package, Loader2, Trash2, Calendar, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,6 +48,7 @@ const PurchasesSection = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -72,8 +84,6 @@ const PurchasesSection = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-
-      // Type assertion to handle the nested query result
       setOrders((data as unknown as Order[]) || []);
     } catch (error: any) {
       console.error("Error fetching orders:", error);
@@ -100,14 +110,12 @@ const PurchasesSection = () => {
     setDownloadingId(item.id);
 
     try {
-      // Get signed URL for private file
       const { data, error } = await supabase.storage
         .from("product-files")
-        .createSignedUrl(item.product.file_url, 60); // 60 seconds expiry
+        .createSignedUrl(item.product.file_url, 60);
 
       if (error) throw error;
 
-      // Open download in new tab
       window.open(data.signedUrl, "_blank");
 
       toast({
@@ -126,17 +134,56 @@ const PurchasesSection = () => {
     }
   };
 
+  const handleDeleteOrder = async (orderId: string) => {
+    setDeletingId(orderId);
+
+    try {
+      // First delete order items
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .delete()
+        .eq("order_id", orderId);
+
+      if (itemsError) throw itemsError;
+
+      // Then delete the order
+      const { error: orderError } = await supabase
+        .from("orders")
+        .delete()
+        .eq("id", orderId);
+
+      if (orderError) throw orderError;
+
+      // Update local state
+      setOrders(orders.filter(order => order.id !== orderId));
+
+      toast({
+        title: "Purchase removed",
+        description: "The purchase has been removed from your history.",
+      });
+    } catch (error: any) {
+      console.error("Delete error:", error);
+      toast({
+        title: "Delete failed",
+        description: error.message || "Could not delete the purchase.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (loading) {
     return (
-      <Card>
+      <Card className="border-border/50 shadow-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
+            <Package className="h-5 w-5 text-primary" />
             Your Purchases
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <CardContent className="flex justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </CardContent>
       </Card>
     );
@@ -144,10 +191,10 @@ const PurchasesSection = () => {
 
   if (orders.length === 0) {
     return (
-      <Card>
+      <Card className="border-border/50 shadow-xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
+            <Package className="h-5 w-5 text-primary" />
             Your Purchases
           </CardTitle>
           <CardDescription>
@@ -155,10 +202,12 @@ const PurchasesSection = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>You haven't made any purchases yet.</p>
-            <Button variant="link" className="mt-2" asChild>
+          <div className="text-center py-12">
+            <div className="h-16 w-16 rounded-full bg-secondary/50 flex items-center justify-center mx-auto mb-4">
+              <Package className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground mb-4">You haven't made any purchases yet.</p>
+            <Button variant="outline" asChild>
               <a href="/#products">Browse Products</a>
             </Button>
           </div>
@@ -168,38 +217,84 @@ const PurchasesSection = () => {
   }
 
   return (
-    <Card>
+    <Card className="border-border/50 shadow-xl">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Package className="h-5 w-5" />
+          <Package className="h-5 w-5 text-primary" />
           Your Purchases
         </CardTitle>
         <CardDescription>
           Download your purchased products anytime
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {orders.map((order) => (
-          <div key={order.id} className="border rounded-lg p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-sm text-muted-foreground">
-                <span>Order placed: </span>
-                <span className="font-medium text-foreground">
-                  {format(new Date(order.created_at), "MMM d, yyyy")}
-                </span>
+          <div 
+            key={order.id} 
+            className="border border-border/50 rounded-xl p-5 bg-card/50 hover:bg-card/80 transition-colors"
+          >
+            {/* Order Header */}
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/30">
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>{format(new Date(order.created_at), "MMM d, yyyy")}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <DollarSign className="h-4 w-4" />
+                  <span className="font-medium text-foreground">${order.total_amount.toFixed(2)}</span>
+                </div>
               </div>
-              <Badge variant="secondary" className="bg-success/20 text-success">
-                Completed
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-success/20 text-success border-0">
+                  Completed
+                </Badge>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      disabled={deletingId === order.id}
+                    >
+                      {deletingId === order.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Remove Purchase Record</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to remove this purchase from your history? 
+                        This action cannot be undone. You will lose access to download links for this order.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDeleteOrder(order.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Remove
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
 
+            {/* Order Items */}
             <div className="space-y-3">
               {order.order_items.map((item) => (
                 <div
                   key={item.id}
                   className="flex items-center gap-4 p-3 bg-secondary/30 rounded-lg"
                 >
-                  <div className="h-14 w-14 rounded-md bg-secondary overflow-hidden flex-shrink-0">
+                  {/* Thumbnail */}
+                  <div className="h-14 w-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0 shadow-sm">
                     {item.product?.thumbnail_url ? (
                       <img
                         src={item.product.thumbnail_url}
@@ -213,15 +308,22 @@ const PurchasesSection = () => {
                     )}
                   </div>
 
+                  {/* Product Info */}
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm line-clamp-1">
                       {item.product?.title || "Product"}
                     </h4>
-                    <p className="text-xs text-muted-foreground">
-                      {item.product?.category} • ${item.price.toFixed(2)}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="secondary" className="text-xs font-normal">
+                        {item.product?.category}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        ${item.price.toFixed(2)}
+                      </span>
+                    </div>
                   </div>
 
+                  {/* Download Button */}
                   <Button
                     size="sm"
                     onClick={() => handleDownload(item)}
@@ -232,18 +334,13 @@ const PurchasesSection = () => {
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <>
-                        <Download className="h-4 w-4 mr-1" />
+                        <Download className="h-4 w-4 mr-1.5" />
                         Download
                       </>
                     )}
                   </Button>
                 </div>
               ))}
-            </div>
-
-            <div className="mt-4 pt-4 border-t flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Total</span>
-              <span className="font-semibold">${order.total_amount.toFixed(2)}</span>
             </div>
           </div>
         ))}
