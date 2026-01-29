@@ -167,6 +167,35 @@ export type Database = {
         }
         Relationships: []
       }
+      product_likes: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_likes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string
@@ -176,6 +205,7 @@ export type Database = {
           file_url: string | null
           id: string
           is_free: boolean | null
+          is_pinned: boolean | null
           is_published: boolean | null
           moderation_notes: string | null
           moderation_status: Database["public"]["Enums"]["moderation_status"]
@@ -194,6 +224,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_free?: boolean | null
+          is_pinned?: boolean | null
           is_published?: boolean | null
           moderation_notes?: string | null
           moderation_status?: Database["public"]["Enums"]["moderation_status"]
@@ -212,6 +243,7 @@ export type Database = {
           file_url?: string | null
           id?: string
           is_free?: boolean | null
+          is_pinned?: boolean | null
           is_published?: boolean | null
           moderation_notes?: string | null
           moderation_status?: Database["public"]["Enums"]["moderation_status"]

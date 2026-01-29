@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Star, ShoppingCart, Eye, Check } from "lucide-react";
+import { Star, ShoppingCart, Eye, Check, Pin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/useCart";
+import { LikeButton } from "@/components/marketplace/LikeButton";
 
 interface ProductCardProps {
   id?: string;
@@ -15,6 +16,7 @@ interface ProductCardProps {
   reviewCount: number;
   image: string;
   isFree?: boolean;
+  isPinned?: boolean;
   onViewDetails?: () => void;
 }
 
@@ -30,6 +32,7 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       reviewCount,
       image,
       isFree,
+      isPinned,
       onViewDetails,
     },
     ref
@@ -60,6 +63,12 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           
           {/* Badges */}
           <div className="absolute top-3 left-3 flex gap-2">
+            {isPinned && (
+              <span className="bg-primary text-primary-foreground text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Pin className="h-3 w-3" />
+                Featured
+              </span>
+            )}
             {isFree && (
               <span className="badge-free">FREE</span>
             )}
@@ -70,6 +79,13 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
 
           {/* Quick actions on hover */}
           <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            {id && (
+              <LikeButton
+                productId={id}
+                showCount={false}
+                className="h-9 w-9 rounded-full shadow-lg bg-card hover:bg-card"
+              />
+            )}
             <Button
               size="icon"
               variant="secondary"
