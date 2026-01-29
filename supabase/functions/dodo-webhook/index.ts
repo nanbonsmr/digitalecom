@@ -80,16 +80,53 @@ serve(async (req) => {
     switch (event.type) {
       case 'payment.succeeded':
         console.log('Payment succeeded:', event.data);
-        // Handle successful payment
-        // You could create an order record, update inventory, send confirmation email, etc.
         
         const metadata = event.data?.metadata;
         if (metadata?.user_id && metadata?.cart_items) {
-          // Log the successful purchase
-          console.log(`User ${metadata.user_id} completed purchase`);
-          
-          // You could create an orders table and insert the order here
-          // For now, we'll just log the successful payment
+          try {
+            const cartItems = JSON.parse(metadata.cart_items);
+            const totalAmount = event.data?.total_amount || 0;
+            
+            // Create order record
+            const { data: order, error: orderError } = await supabase
+              .from('orders')
+              .insert({
+                user_id: metadata.user_id,
+                payment_id: event.data?.payment_id || null,
+                status: 'completed',
+                total_amount: totalAmount / 100, // Convert cents to dollars
+              })
+              .select()
+              .single();
+
+            if (orderError) {
+              console.error('Error creating order:', orderError);
+              throw orderError;
+            }
+
+            console.log('Order created:', order.id);
+
+            // Create order items
+            const orderItems = cartItems.map((item: { id: string; price: number; qty: number }) => ({
+              order_id: order.id,
+              product_id: item.id,
+              price: item.price,
+              quantity: item.qty || 1,
+            }));
+
+            const { error: itemsError } = await supabase
+              .from('order_items')
+              .insert(orderItems);
+
+            if (itemsError) {
+              console.error('Error creating order items:', itemsError);
+              throw itemsError;
+            }
+
+            console.log(`Order ${order.id} completed with ${orderItems.length} items`);
+          } catch (parseError) {
+            console.error('Error processing cart items:', parseError);
+          }
         }
         break;
 

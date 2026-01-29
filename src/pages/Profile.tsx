@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import PurchasesSection from "@/components/profile/PurchasesSection";
 
 const Profile = () => {
   const { user, profile, loading, refreshProfile } = useAuth();
@@ -295,6 +296,11 @@ const Profile = () => {
             </form>
           </CardContent>
         </Card>
+
+        {/* Purchases Section */}
+        <div className="mt-8">
+          <PurchasesSection />
+        </div>
       </div>
     </div>
   );
