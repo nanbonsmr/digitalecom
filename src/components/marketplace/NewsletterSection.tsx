@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Mail, Sparkles, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { z } from "zod";
 
 const emailSchema = z.string().trim().email({ message: "Please enter a valid email address" });
 
-const NewsletterSection = () => {
+const NewsletterSection = forwardRef<HTMLElement>((_, ref) => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
