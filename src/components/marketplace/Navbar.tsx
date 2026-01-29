@@ -1,12 +1,23 @@
 import { useState } from "react";
-import { Search, ShoppingCart, Menu, X, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount] = useState(3);
+  const { user, profile, signOut, loading } = useAuth();
 
   const navLinks = [
     { label: "Home", href: "#" },
@@ -16,6 +27,20 @@ export const Navbar = () => {
     { label: "Sell", href: "#seller" },
     { label: "Support", href: "#" },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  const getInitials = () => {
+    if (profile?.display_name) {
+      return profile.display_name.charAt(0).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return "U";
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
@@ -68,12 +93,53 @@ export const Navbar = () => {
 
             {/* Auth Buttons - Desktop */}
             <div className="hidden sm:flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-                Login
-              </Button>
-              <Button size="sm" className="btn-gradient-primary rounded-full px-5">
-                Sign Up
-              </Button>
+              {loading ? (
+                <div className="w-8 h-8 rounded-full bg-secondary animate-pulse"></div>
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {getInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="flex items-center justify-start gap-2 p-2">
+                      <div className="flex flex-col space-y-1 leading-none">
+                        {profile?.display_name && (
+                          <p className="font-medium">{profile.display_name}</p>
+                        )}
+                        <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="#" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </a>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
+                    <Link to="/auth">Login</Link>
+                  </Button>
+                  <Button size="sm" className="btn-gradient-primary rounded-full px-5" asChild>
+                    <Link to="/auth">Sign Up</Link>
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -116,12 +182,21 @@ export const Navbar = () => {
               </a>
             ))}
             <div className="flex gap-2 mt-2 sm:hidden">
-              <Button variant="outline" className="flex-1">
-                Login
-              </Button>
-              <Button className="flex-1 btn-gradient-primary">
-                Sign Up
-              </Button>
+              {user ? (
+                <Button variant="outline" className="flex-1" onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="flex-1" asChild>
+                    <Link to="/auth">Login</Link>
+                  </Button>
+                  <Button className="flex-1 btn-gradient-primary" asChild>
+                    <Link to="/auth">Sign Up</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>
