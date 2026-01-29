@@ -14,12 +14,15 @@ import {
   User,
   Package,
   ChevronRight,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/useCart";
+import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/marketplace/Navbar";
 import Footer from "@/components/marketplace/Footer";
@@ -53,7 +56,8 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [seller, setSeller] = useState<SellerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { addToCart, isInCart } = useCart();
+  const inCart = id ? isInCart(id) : false;
 
   useEffect(() => {
     if (id) {
@@ -102,16 +106,10 @@ const ProductDetail = () => {
     }
   };
 
-  const handleAddToCart = async () => {
-    setIsAddingToCart(true);
-    // Simulate adding to cart
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    
-    toast({
-      title: "Added to cart",
-      description: `${product?.title} has been added to your cart.`,
-    });
-    setIsAddingToCart(false);
+  const handleAddToCart = () => {
+    if (id) {
+      addToCart(id);
+    }
   };
 
   const handleShare = async () => {
@@ -295,16 +293,24 @@ const ProductDetail = () => {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button
                 size="lg"
-                className="flex-1 btn-gradient-primary h-14 text-lg"
-                onClick={handleAddToCart}
-                disabled={isAddingToCart}
-              >
-                {isAddingToCart ? (
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                ) : (
-                  <ShoppingCart className="h-5 w-5 mr-2" />
+                className={cn(
+                  "flex-1 h-14 text-lg",
+                  inCart ? "bg-success hover:bg-success/90" : "btn-gradient-primary"
                 )}
-                {product.is_free ? "Download Free" : "Add to Cart"}
+                onClick={handleAddToCart}
+                disabled={inCart}
+              >
+                {inCart ? (
+                  <>
+                    <Check className="h-5 w-5 mr-2" />
+                    Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    {product.is_free ? "Download Free" : "Add to Cart"}
+                  </>
+                )}
               </Button>
               <Button size="lg" variant="outline" className="h-14">
                 <Heart className="h-5 w-5" />

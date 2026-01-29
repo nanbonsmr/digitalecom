@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, ShoppingCart, Menu, X, User, LogOut, Store } from "lucide-react";
+import { Search, Menu, X, User, LogOut, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -13,10 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CartSheet } from "@/components/cart/CartSheet";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount] = useState(3);
   const { user, profile, signOut, loading } = useAuth();
 
   const navLinks = [
@@ -82,14 +82,7 @@ export const Navbar = () => {
           {/* Right Actions */}
           <div className="flex items-center gap-2">
             {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 h-5 w-5 rounded-full bg-accent text-accent-foreground text-xs font-bold flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Button>
+            <CartSheet />
 
             {/* Auth Buttons - Desktop */}
             <div className="hidden sm:flex items-center gap-2">
