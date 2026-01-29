@@ -8,9 +8,6 @@ import {
   Package,
   Clock,
   Upload,
-  Wallet,
-  CreditCard,
-  Smartphone,
   ArrowRight,
   HelpCircle,
   Menu,
@@ -26,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
+
 import {
   Dialog,
   DialogContent,
@@ -43,11 +40,15 @@ import { supabase } from "@/integrations/supabase/client";
 
 import SellerSidebar from "@/components/seller/SellerSidebar";
 import StatCard from "@/components/seller/StatCard";
-import OrderTable from "@/components/seller/OrderTable";
-import ReviewCard from "@/components/seller/ReviewCard";
 import ProductRow from "@/components/seller/ProductRow";
 import SalesChart from "@/components/seller/SalesChart";
 import ProductForm from "@/components/seller/ProductForm";
+import ProductsSection from "@/components/seller/sections/ProductsSection";
+import OrdersSection from "@/components/seller/sections/OrdersSection";
+import EarningsSection from "@/components/seller/sections/EarningsSection";
+import DiscountsSection from "@/components/seller/sections/DiscountsSection";
+import ReviewsSection from "@/components/seller/sections/ReviewsSection";
+import SettingsSection from "@/components/seller/sections/SettingsSection";
 
 // Stats will be calculated from real data
 
@@ -283,194 +284,190 @@ const SellerDashboard = () => {
 
         {/* Dashboard Content */}
         <main className="p-4 lg:p-6 space-y-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard
-              title="Total Sales"
-              value={stats.totalSales}
-              icon={ShoppingCart}
-              trend={{ value: 12, isPositive: true }}
-            />
-            <StatCard
-              title="Total Earnings"
-              value={`$${stats.totalEarnings.toLocaleString()}`}
-              icon={DollarSign}
-              trend={{ value: 8, isPositive: true }}
-            />
-            <StatCard
-              title="Active Products"
-              value={stats.activeProducts}
-              icon={Package}
-              trend={{ value: 2, isPositive: true }}
-            />
-            <StatCard
-              title="Draft Products"
-              value={stats.draftProducts}
-              icon={Clock}
-            />
-          </div>
+          {activeSection === "overview" && (
+            <>
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard
+                  title="Total Sales"
+                  value={stats.totalSales}
+                  icon={ShoppingCart}
+                  trend={{ value: 12, isPositive: true }}
+                />
+                <StatCard
+                  title="Total Earnings"
+                  value={`$${stats.totalEarnings.toLocaleString()}`}
+                  icon={DollarSign}
+                  trend={{ value: 8, isPositive: true }}
+                />
+                <StatCard
+                  title="Active Products"
+                  value={stats.activeProducts}
+                  icon={Package}
+                  trend={{ value: 2, isPositive: true }}
+                />
+                <StatCard
+                  title="Draft Products"
+                  value={stats.draftProducts}
+                  icon={Clock}
+                />
+              </div>
 
-          {/* Sales Chart */}
-          <SalesChart />
+              {/* Sales Chart */}
+              <SalesChart />
 
-          {/* Upload CTA + Earnings Summary */}
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Upload CTA */}
-            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl border border-primary/20 p-6">
-              <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <Upload className="h-6 w-6 text-primary" />
+              {/* Upload CTA + Earnings Summary */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* Upload CTA */}
+                <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl border border-primary/20 p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-foreground">
+                        Upload a New Digital Product
+                      </h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Add PDFs, ZIP bundles, templates, and start earning today.
+                      </p>
+                      <Button
+                        className="mt-4 btn-gradient-primary"
+                        onClick={() => {
+                          setEditingProduct(null);
+                          setIsProductFormOpen(true);
+                        }}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Product
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Upload a New Digital Product
+
+                {/* Earnings Summary */}
+                <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">
+                    Earnings & Payout
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Add PDFs, ZIP bundles, templates, and start earning today.
-                  </p>
-                  <Button
-                    className="mt-4 btn-gradient-primary"
-                    onClick={() => {
-                      setEditingProduct(null);
-                      setIsProductFormOpen(true);
-                    }}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Product
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="text-center p-3 bg-muted/30 rounded-xl">
+                      <p className="text-2xl font-bold text-foreground">${stats.totalEarnings}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Total</p>
+                    </div>
+                    <div className="text-center p-3 bg-muted/30 rounded-xl">
+                      <p className="text-2xl font-bold text-foreground">$0</p>
+                      <p className="text-xs text-muted-foreground mt-1">Pending</p>
+                    </div>
+                    <div className="text-center p-3 bg-muted/30 rounded-xl">
+                      <p className="text-2xl font-bold text-foreground">$0</p>
+                      <p className="text-xs text-muted-foreground mt-1">Withdrawn</p>
+                    </div>
+                  </div>
+                  <Button className="w-full" variant="outline" onClick={() => setActiveSection("earnings")}>
+                    View Earnings Details
                   </Button>
                 </div>
               </div>
-            </div>
 
-            {/* Earnings Summary */}
-            <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                Earnings & Payout
-              </h3>
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="text-center p-3 bg-muted/30 rounded-xl">
-                  <p className="text-2xl font-bold text-foreground">$2,450</p>
-                  <p className="text-xs text-muted-foreground mt-1">Available</p>
-                </div>
-                <div className="text-center p-3 bg-muted/30 rounded-xl">
-                  <p className="text-2xl font-bold text-foreground">$350</p>
-                  <p className="text-xs text-muted-foreground mt-1">Pending</p>
-                </div>
-                <div className="text-center p-3 bg-muted/30 rounded-xl">
-                  <p className="text-2xl font-bold text-foreground">$8,200</p>
-                  <p className="text-xs text-muted-foreground mt-1">Withdrawn</p>
-                </div>
-              </div>
-              <Button className="w-full" variant="outline">
-                <Wallet className="h-4 w-4 mr-2" />
-                Request Payout
-              </Button>
-              <Separator className="my-4" />
-              <div className="flex items-center gap-4">
-                <p className="text-sm text-muted-foreground">Payment Methods:</p>
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+              {/* Products + Reviews Grid */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* My Products */}
+                <div className="bg-card rounded-2xl border border-border/50 shadow-sm">
+                  <div className="p-6 border-b border-border flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">My Products</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Your latest digital products
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setActiveSection("products")}>
+                      View All <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
                   </div>
-                  <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
-                    <Smartphone className="h-4 w-4 text-muted-foreground" />
+                  <div className="p-4 space-y-3">
+                    {isLoadingProducts ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      </div>
+                    ) : displayProducts.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p>No products yet. Upload your first one!</p>
+                      </div>
+                    ) : (
+                      displayProducts.slice(0, 3).map((product) => (
+                        <ProductRow
+                          key={product.id}
+                          product={product}
+                          onEdit={handleEditProduct}
+                          onDelete={handleDeleteProduct}
+                          onView={(id) => navigate(`/product/${id}`)}
+                        />
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Reviews */}
+                <div className="bg-card rounded-2xl border border-border/50 shadow-sm">
+                  <div className="p-6 border-b border-border flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">Customer Reviews</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Latest feedback from buyers
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setActiveSection("reviews")}>
+                      View All <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>Reviews will appear here once customers purchase your products.</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Orders Section - Placeholder for future orders */}
-          {displayProducts.length === 0 && !isLoadingProducts ? (
-            <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-8 text-center">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">No Products Yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Start by uploading your first digital product to see your dashboard come to life.
-              </p>
-              <Button
-                className="btn-gradient-primary"
-                onClick={() => {
-                  setEditingProduct(null);
-                  setIsProductFormOpen(true);
-                }}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Your First Product
-              </Button>
-            </div>
-          ) : null}
+              {/* Footer */}
+              <div className="text-center py-6 border-t border-border">
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  Need help? Visit the{" "}
+                  <a href="#" className="text-primary hover:underline">
+                    Seller Support Center
+                  </a>{" "}
+                  or contact us anytime.
+                </p>
+              </div>
+            </>
+          )}
 
-          {/* Products + Reviews Grid */}
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* My Products */}
-            <div className="bg-card rounded-2xl border border-border/50 shadow-sm">
-              <div className="p-6 border-b border-border flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">My Products</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Your latest digital products
-                  </p>
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => setActiveSection("products")}>
-                  View All <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-              <div className="p-4 space-y-3">
-                {isLoadingProducts ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>
-                ) : displayProducts.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>No products yet. Upload your first one!</p>
-                  </div>
-                ) : (
-                  displayProducts.slice(0, 3).map((product) => (
-                    <ProductRow
-                      key={product.id}
-                      product={product}
-                      onEdit={handleEditProduct}
-                      onDelete={handleDeleteProduct}
-                      onView={(id) => navigate(`/product/${id}`)}
-                    />
-                  ))
-                )}
-              </div>
-            </div>
+          {activeSection === "products" && (
+            <ProductsSection
+              products={displayProducts}
+              isLoading={isLoadingProducts}
+              onEdit={handleEditProduct}
+              onDelete={handleDeleteProduct}
+              onView={(id) => navigate(`/product/${id}`)}
+              onUploadNew={() => {
+                setEditingProduct(null);
+                setIsProductFormOpen(true);
+              }}
+            />
+          )}
 
-            {/* Reviews */}
-            <div className="bg-card rounded-2xl border border-border/50 shadow-sm">
-              <div className="p-6 border-b border-border flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground">Customer Reviews</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Latest feedback from buyers
-                  </p>
-                </div>
-                <Button variant="ghost" size="sm" onClick={() => setActiveSection("reviews")}>
-                  View All <ArrowRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-              <div className="p-4 space-y-3">
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Reviews will appear here once customers purchase your products.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {activeSection === "orders" && <OrdersSection />}
 
-          {/* Footer */}
-          <div className="text-center py-6 border-t border-border">
-            <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-              <HelpCircle className="h-4 w-4" />
-              Need help? Visit the{" "}
-              <a href="#" className="text-primary hover:underline">
-                Seller Support Center
-              </a>{" "}
-              or contact us anytime.
-            </p>
-          </div>
+          {activeSection === "earnings" && (
+            <EarningsSection totalEarnings={stats.totalEarnings} />
+          )}
+
+          {activeSection === "discounts" && <DiscountsSection />}
+
+          {activeSection === "reviews" && <ReviewsSection />}
+
+          {activeSection === "settings" && <SettingsSection />}
         </main>
       </div>
 
