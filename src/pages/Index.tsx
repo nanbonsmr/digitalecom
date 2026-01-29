@@ -410,12 +410,6 @@ const Index = () => {
                     reviewCount={product.download_count}
                     image={product.thumbnail_url || productBusinessPlan}
                     isFree={product.is_free}
-                    onAddToCart={() => {
-                      toast({
-                        title: "Added to cart",
-                        description: `${product.title} has been added to your cart.`,
-                      });
-                    }}
                     onViewDetails={() => navigate(`/product/${product.id}`)}
                   />
                 ))
@@ -423,12 +417,6 @@ const Index = () => {
                   <ProductCard
                     key={product.title}
                     {...product}
-                    onAddToCart={() => {
-                      toast({
-                        title: "Added to cart",
-                        description: `${product.title} has been added to your cart.`,
-                      });
-                    }}
                     onViewDetails={() => console.log("View details:", product.title)}
                   />
                 ))}

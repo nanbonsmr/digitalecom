@@ -1,7 +1,8 @@
-import { Star, ShoppingCart, Eye } from "lucide-react";
+import { Star, ShoppingCart, Eye, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/hooks/useCart";
 
 interface ProductCardProps {
   id?: string;
@@ -13,7 +14,6 @@ interface ProductCardProps {
   reviewCount: number;
   image: string;
   isFree?: boolean;
-  onAddToCart?: () => void;
   onViewDetails?: () => void;
 }
 
@@ -27,10 +27,19 @@ export const ProductCard = ({
   reviewCount,
   image,
   isFree,
-  onAddToCart,
   onViewDetails,
 }: ProductCardProps) => {
+  const { addToCart, isInCart } = useCart();
   const discount = originalPrice ? Math.round((1 - price / originalPrice) * 100) : 0;
+  const inCart = id ? isInCart(id) : false;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (id) {
+      addToCart(id);
+    }
+  };
 
   const CardContent = (
     <>
@@ -115,15 +124,24 @@ export const ProductCard = ({
           </div>
           <Button
             size="sm"
-            className="btn-gradient-primary rounded-full px-4"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onAddToCart?.();
-            }}
+            className={cn(
+              "rounded-full px-4",
+              inCart ? "bg-success hover:bg-success/90" : "btn-gradient-primary"
+            )}
+            onClick={handleAddToCart}
+            disabled={inCart}
           >
-            <ShoppingCart className="h-4 w-4 mr-1.5" />
-            Add
+            {inCart ? (
+              <>
+                <Check className="h-4 w-4 mr-1.5" />
+                Added
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-4 w-4 mr-1.5" />
+                Add
+              </>
+            )}
           </Button>
         </div>
       </div>
