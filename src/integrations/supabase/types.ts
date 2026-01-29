@@ -84,6 +84,8 @@ export type Database = {
           id: string
           is_free: boolean | null
           is_published: boolean | null
+          moderation_notes: string | null
+          moderation_status: Database["public"]["Enums"]["moderation_status"]
           original_price: number | null
           price: number
           seller_id: string
@@ -100,6 +102,8 @@ export type Database = {
           id?: string
           is_free?: boolean | null
           is_published?: boolean | null
+          moderation_notes?: string | null
+          moderation_status?: Database["public"]["Enums"]["moderation_status"]
           original_price?: number | null
           price: number
           seller_id: string
@@ -116,6 +120,8 @@ export type Database = {
           id?: string
           is_free?: boolean | null
           is_published?: boolean | null
+          moderation_notes?: string | null
+          moderation_status?: Database["public"]["Enums"]["moderation_status"]
           original_price?: number | null
           price?: number
           seller_id?: string
@@ -194,6 +200,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      moderation_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -322,6 +329,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      moderation_status: ["pending", "approved", "rejected"],
     },
   },
 } as const

@@ -64,6 +64,8 @@ interface Product {
   is_published: boolean;
   download_count: number;
   created_at: string;
+  moderation_status: "pending" | "approved" | "rejected";
+  moderation_notes: string | null;
 }
 
 const SellerDashboard = () => {
@@ -161,6 +163,7 @@ const SellerDashboard = () => {
     price: p.price,
     downloads: p.download_count || 0,
     status: p.is_published ? "active" as const : "draft" as const,
+    moderationStatus: p.moderation_status,
   }));
 
   const stats = {

@@ -18,6 +18,7 @@ interface Product {
   price: number;
   downloads: number;
   status: "active" | "draft";
+  moderationStatus?: "pending" | "approved" | "rejected";
 }
 
 interface ProductsSectionProps {
@@ -45,7 +46,9 @@ const ProductsSection = ({
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || product.status === statusFilter;
+      statusFilter === "all" || 
+      product.status === statusFilter ||
+      product.moderationStatus === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -85,6 +88,9 @@ const ProductsSection = ({
             <SelectItem value="all">All Products</SelectItem>
             <SelectItem value="active">Published</SelectItem>
             <SelectItem value="draft">Drafts</SelectItem>
+            <SelectItem value="pending">Pending Review</SelectItem>
+            <SelectItem value="approved">Approved</SelectItem>
+            <SelectItem value="rejected">Rejected</SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -9,6 +9,7 @@ interface Product {
   price: number;
   downloads: number;
   status: "active" | "draft";
+  moderationStatus?: "pending" | "approved" | "rejected";
 }
 
 interface ProductRowProps {
@@ -44,15 +45,34 @@ export const ProductRow = ({ product, onEdit, onDelete, onView }: ProductRowProp
           </div>
         </div>
       </div>
-      <Badge
-        className={
-          product.status === "active"
-            ? "bg-success/20 text-success border-0"
-            : "bg-muted text-muted-foreground border-0"
-        }
-      >
-        {product.status === "active" ? "Active" : "Draft"}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge
+          className={
+            product.status === "active"
+              ? "bg-success/20 text-success border-0"
+              : "bg-muted text-muted-foreground border-0"
+          }
+        >
+          {product.status === "active" ? "Published" : "Draft"}
+        </Badge>
+        {product.moderationStatus && (
+          <Badge
+            className={
+              product.moderationStatus === "approved"
+                ? "bg-success/20 text-success border-0"
+                : product.moderationStatus === "rejected"
+                ? "bg-destructive/20 text-destructive border-0"
+                : "bg-amber-500/20 text-amber-600 border-0"
+            }
+          >
+            {product.moderationStatus === "approved"
+              ? "Approved"
+              : product.moderationStatus === "rejected"
+              ? "Rejected"
+              : "Pending Review"}
+          </Badge>
+        )}
+      </div>
       <div className="flex items-center gap-1">
         <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => onView?.(product.id)}>
           <Eye className="h-4 w-4" />
