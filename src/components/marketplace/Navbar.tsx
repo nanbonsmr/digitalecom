@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, User, LogOut, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -123,6 +123,14 @@ export const Navbar = () => {
                         Profile
                       </Link>
                     </DropdownMenuItem>
+                    {profile?.is_seller && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/seller" className="cursor-pointer">
+                          <Store className="mr-2 h-4 w-4" />
+                          Seller Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />
