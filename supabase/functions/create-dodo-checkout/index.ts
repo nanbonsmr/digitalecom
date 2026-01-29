@@ -32,8 +32,14 @@ serve(async (req) => {
 
   try {
     const DODO_API_KEY = Deno.env.get('DODO_PAYMENTS_API_KEY');
+    const DODO_GENERIC_PRODUCT_ID = Deno.env.get('DODO_GENERIC_PRODUCT_ID');
+    
     if (!DODO_API_KEY) {
       throw new Error('DODO_PAYMENTS_API_KEY is not configured');
+    }
+    
+    if (!DODO_GENERIC_PRODUCT_ID) {
+      throw new Error('DODO_GENERIC_PRODUCT_ID is not configured. Create a "Pay What You Want" product in Dodo dashboard.');
     }
 
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -114,8 +120,12 @@ serve(async (req) => {
           name: customer_name,
         },
         payment_link: true,
-        // Use total_amount for ad-hoc payments without pre-registered products
-        total_amount: total,
+        // Use a single "Pay What You Want" product with dynamic amount
+        product_cart: [{
+          product_id: DODO_GENERIC_PRODUCT_ID,
+          quantity: 1,
+          amount: total, // Total amount in cents
+        }],
         return_url: return_url,
         metadata: {
           user_id: claims.user.id,
