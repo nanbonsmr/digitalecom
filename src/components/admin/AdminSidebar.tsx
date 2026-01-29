@@ -4,11 +4,12 @@ import {
   Users,
   Store,
   FileCheck,
-  ShieldCheck,
   Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
+  BarChart3,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,9 @@ interface AdminSidebarProps {
 const menuItems = [
   { id: "overview", label: "Dashboard Overview", icon: LayoutDashboard },
   { id: "products", label: "My Products", icon: FileCheck },
+  { id: "analytics", label: "Sales Analytics", icon: BarChart3 },
   { id: "users", label: "Customers", icon: Users },
+  { id: "newsletter", label: "Newsletter", icon: Mail },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
