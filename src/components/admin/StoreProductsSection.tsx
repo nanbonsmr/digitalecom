@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Package, Search, Plus, Filter, Loader2, Pencil, Trash2, Eye, MoreVertical } from "lucide-react";
+import { Package, Search, Plus, Filter, Loader2, Pencil, Trash2, Eye, MoreVertical, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -47,6 +48,7 @@ interface Product {
   thumbnail_url: string | null;
   is_free: boolean | null;
   is_published: boolean | null;
+  is_pinned: boolean | null;
   download_count: number | null;
   moderation_status: "pending" | "approved" | "rejected";
 }
@@ -124,6 +126,32 @@ const StoreProductsSection = ({ onProductChange }: StoreProductsSectionProps) =>
     setEditingProduct(null);
     fetchProducts();
     onProductChange();
+  };
+
+  const handleTogglePin = async (product: Product) => {
+    try {
+      const { error } = await supabase
+        .from("products")
+        .update({ is_pinned: !product.is_pinned })
+        .eq("id", product.id);
+
+      if (error) throw error;
+
+      toast({
+        title: product.is_pinned ? "Product unpinned" : "Product pinned",
+        description: product.is_pinned
+          ? "Product removed from featured section"
+          : "Product will appear in featured section on homepage",
+      });
+
+      fetchProducts();
+    } catch (error: any) {
+      toast({
+        title: "Error updating product",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredProducts = products.filter((product) => {
@@ -253,9 +281,14 @@ const StoreProductsSection = ({ onProductChange }: StoreProductsSectionProps) =>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-foreground truncate">
-                    {product.title}
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium text-foreground truncate">
+                      {product.title}
+                    </h3>
+                    {product.is_pinned && (
+                      <Pin className="h-4 w-4 text-primary flex-shrink-0" />
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     {product.category} •{" "}
                     {product.is_free ? "Free" : `$${product.price}`}
@@ -279,6 +312,13 @@ const StoreProductsSection = ({ onProductChange }: StoreProductsSectionProps) =>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => handleTogglePin(product)}
+                    >
+                      <Pin className="h-4 w-4 mr-2" />
+                      {product.is_pinned ? "Unpin from Homepage" : "Pin to Homepage"}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => window.open(`/product/${product.id}`, "_blank")}
                     >

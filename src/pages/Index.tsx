@@ -43,6 +43,7 @@ interface DbProduct {
   category: string;
   thumbnail_url: string | null;
   is_free: boolean | null;
+  is_pinned: boolean | null;
   download_count: number | null;
   seller_id: string;
   profiles?: {
@@ -76,8 +77,9 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("id, title, price, original_price, category, thumbnail_url, is_free, download_count, seller_id")
+        .select("id, title, price, original_price, category, thumbnail_url, is_free, is_pinned, download_count, seller_id")
         .eq("is_published", true)
+        .order("is_pinned", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false })
         .limit(8);
 
@@ -365,6 +367,7 @@ const Index = () => {
                   reviewCount={product.download_count || 0}
                   image={product.thumbnail_url || productBusinessPlan}
                   isFree={product.is_free || false}
+                  isPinned={product.is_pinned || false}
                   onViewDetails={() => navigate(`/product/${product.id}`)}
                 />
               ))
