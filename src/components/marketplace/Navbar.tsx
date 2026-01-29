@@ -46,7 +46,6 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
     { label: "Categories", href: "/products" },
-    { label: "Sell", href: "/seller" },
   ];
 
   const handleSignOut = async () => {
@@ -137,19 +136,11 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
                         Profile
                       </Link>
                     </DropdownMenuItem>
-                    {profile?.is_seller && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/seller" className="cursor-pointer">
-                          <Store className="mr-2 h-4 w-4" />
-                          Seller Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
                     {isAdmin && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="cursor-pointer">
-                          <ShieldCheck className="mr-2 h-4 w-4" />
-                          Admin Panel
+                          <Store className="mr-2 h-4 w-4" />
+                          Store Dashboard
                         </Link>
                       </DropdownMenuItem>
                     )}

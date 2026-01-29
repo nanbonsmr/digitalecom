@@ -8,7 +8,6 @@ import { CartProvider } from "@/hooks/useCart";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
-import SellerDashboard from "./pages/SellerDashboard";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
 import Products from "./pages/Products";
@@ -30,7 +29,6 @@ const App = () => (
               <Route path="/products" element={<Products />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/seller" element={<SellerDashboard />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/admin" element={<Admin />} />
