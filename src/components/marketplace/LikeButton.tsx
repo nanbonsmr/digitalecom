@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -11,12 +10,12 @@ interface LikeButtonProps {
   className?: string;
 }
 
-export const LikeButton = forwardRef<HTMLButtonElement, LikeButtonProps>(({
+export const LikeButton = ({
   productId,
   showCount = true,
   size = "sm",
   className,
-}, ref) => {
+}: LikeButtonProps) => {
   const { likeCount, isLiked, isLoading, toggleLike } = useLikes(productId);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -27,7 +26,6 @@ export const LikeButton = forwardRef<HTMLButtonElement, LikeButtonProps>(({
 
   return (
     <Button
-      ref={ref}
       variant="ghost"
       size="icon"
       className={cn(
@@ -61,8 +59,6 @@ export const LikeButton = forwardRef<HTMLButtonElement, LikeButtonProps>(({
       )}
     </Button>
   );
-});
-
-LikeButton.displayName = "LikeButton";
+};
 
 export default LikeButton;
