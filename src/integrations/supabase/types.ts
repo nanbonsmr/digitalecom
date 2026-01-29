@@ -133,6 +133,7 @@ export type Database = {
           display_name: string | null
           id: string
           is_seller: boolean | null
+          seller_request_pending: boolean | null
           updated_at: string
           user_id: string
         }
@@ -143,6 +144,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           is_seller?: boolean | null
+          seller_request_pending?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -153,6 +155,7 @@ export type Database = {
           display_name?: string | null
           id?: string
           is_seller?: boolean | null
+          seller_request_pending?: boolean | null
           updated_at?: string
           user_id?: string
         }

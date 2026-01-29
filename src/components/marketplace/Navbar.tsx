@@ -1,10 +1,11 @@
-import { useState, forwardRef } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { Link } from "react-router-dom";
-import { Search, Menu, X, User, LogOut, Store } from "lucide-react";
+import { Search, Menu, X, User, LogOut, Store, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,7 +18,29 @@ import { CartSheet } from "@/components/cart/CartSheet";
 
 export const Navbar = forwardRef<HTMLElement>((_, ref) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { user, profile, signOut, loading } = useAuth();
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      setIsAdmin(!error && !!data);
+    };
+
+    checkAdminStatus();
+  }, [user]);
 
   const navLinks = [
     { label: "Home", href: "/" },
@@ -119,6 +142,14 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
                         <Link to="/seller" className="cursor-pointer">
                           <Store className="mr-2 h-4 w-4" />
                           Seller Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer">
+                          <ShieldCheck className="mr-2 h-4 w-4" />
+                          Admin Panel
                         </Link>
                       </DropdownMenuItem>
                     )}
