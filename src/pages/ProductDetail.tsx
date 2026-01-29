@@ -48,7 +48,7 @@ interface SellerProfile {
   bio: string | null;
 }
 
-const ProductDetail = () => {
+const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
