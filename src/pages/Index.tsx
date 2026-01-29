@@ -32,7 +32,7 @@ import Navbar from "@/components/marketplace/Navbar";
 import Footer from "@/components/marketplace/Footer";
 import ProductCard from "@/components/marketplace/ProductCard";
 import CategoryPill from "@/components/marketplace/CategoryPill";
-import BundleCard from "@/components/marketplace/BundleCard";
+
 import FeatureCard from "@/components/marketplace/FeatureCard";
 import TestimonialCard from "@/components/marketplace/TestimonialCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,9 +41,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 // Import images
 import heroMockup from "@/assets/hero-mockup.jpg";
-import bundleBusiness from "@/assets/bundle-business.jpg";
-import bundleResume from "@/assets/bundle-resume.jpg";
-import bundleBranding from "@/assets/bundle-branding.jpg";
 import productBusinessPlan from "@/assets/product-business-plan.jpg";
 
 interface DbProduct {
@@ -182,35 +179,6 @@ const Index = () => {
     description: "Be the first to upload a product! Start selling your digital assets today."
   };
 
-  const bundles = [
-    {
-      title: "Startup Business Pack",
-      description:
-        "Everything you need to launch your startup. Business plan, pitch deck, financial projections, and more.",
-      itemCount: 12,
-      price: 79,
-      originalPrice: 199,
-      image: bundleBusiness,
-    },
-    {
-      title: "Resume + Cover Letter Kit",
-      description:
-        "Land your dream job with professionally designed resume templates and matching cover letters.",
-      itemCount: 8,
-      price: 29,
-      originalPrice: 59,
-      image: bundleResume,
-    },
-    {
-      title: "Branding Assets Pack",
-      description:
-        "Complete branding toolkit with logo templates, social media graphics, and brand guidelines.",
-      itemCount: 15,
-      price: 99,
-      originalPrice: 249,
-      image: bundleBranding,
-    },
-  ];
 
   const testimonials = [
     {
@@ -498,47 +466,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Best Selling Bundles */}
-      <section id="bundles" className="py-16 lg:py-20 bg-secondary/50">
-        <div className="container">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <span className="text-sm font-medium text-primary uppercase tracking-wide">
-              Save More, Get More
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
-              Best Selling Bundles
-            </h2>
-            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Get everything you need in one package. Our curated bundles save you up to 60% compared to
-              buying individually.
-            </p>
-          </div>
-
-          {/* Bundle Cards */}
-          <div className="space-y-6">
-            {bundles.map((bundle) => (
-              <BundleCard
-                key={bundle.title}
-                {...bundle}
-                onView={() => toast({ title: "Bundle", description: `Viewing "${bundle.title}"` })}
-              />
-            ))}
-          </div>
-
-          {/* CTA */}
-          <div className="text-center mt-10">
-            <Button 
-              size="lg" 
-              className="btn-gradient-primary rounded-full px-8"
-              onClick={() => toast({ title: "Coming Soon", description: "The bundles page is coming soon!" })}
-            >
-              View All Bundles
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
-        </div>
-      </section>
 
       {/* Why Choose Us */}
       <section className="py-16 lg:py-20">
