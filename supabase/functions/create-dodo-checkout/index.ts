@@ -117,6 +117,7 @@ serve(async (req) => {
         product_cart: items.filter(item => !item.product.is_free).map(item => ({
           product_id: item.product_id,
           quantity: item.quantity,
+          amount: Math.round(item.product.price * 100), // Amount in cents for one-time custom payments
         })),
         return_url: return_url,
         metadata: {
