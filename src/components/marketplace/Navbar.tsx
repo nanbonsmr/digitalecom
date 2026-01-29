@@ -45,7 +45,6 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
-    { label: "Categories", href: "/products" },
   ];
 
   const handleSignOut = async () => {
