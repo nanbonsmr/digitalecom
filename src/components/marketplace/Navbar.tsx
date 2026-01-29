@@ -1,5 +1,5 @@
-import { useState, useEffect, forwardRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, forwardRef, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X, User, LogOut, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,10 @@ import { CartSheet } from "@/components/cart/CartSheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const Navbar = forwardRef<HTMLElement>((_, ref) => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user, profile, signOut, loading } = useAuth();
 
   // Check if user is admin
@@ -50,6 +52,15 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+      setIsMenuOpen(false);
+    }
   };
 
   const getInitials = () => {
@@ -88,16 +99,18 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
           </nav>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
+          <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-md mx-6">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 h-10 rounded-full bg-secondary border-0 focus-visible:ring-2 focus-visible:ring-primary"
               />
             </div>
-          </div>
+          </form>
 
           {/* Right Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
@@ -186,14 +199,16 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
           )}
         >
           {/* Mobile Search */}
-          <div className="relative mb-4 md:hidden">
+          <form onSubmit={handleSearch} className="relative mb-4 md:hidden">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 h-10 rounded-full bg-secondary border-0"
             />
-          </div>
+          </form>
 
           <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
