@@ -66,7 +66,7 @@ const NewsletterSection = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <section className="py-10 md:py-16 lg:py-20 bg-primary/5 border-y border-border">
+    <section ref={ref} className="py-10 md:py-16 lg:py-20 bg-primary/5 border-y border-border">
       <div className="container px-4">
         <div className="max-w-2xl mx-auto text-center">
           {/* Icon */}
@@ -137,6 +137,8 @@ const NewsletterSection = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-};
+});
+
+NewsletterSection.displayName = "NewsletterSection";
 
 export default NewsletterSection;

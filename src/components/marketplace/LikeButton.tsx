@@ -27,6 +27,7 @@ export const LikeButton = forwardRef<HTMLButtonElement, LikeButtonProps>(({
 
   return (
     <Button
+      ref={ref}
       variant="ghost"
       size="icon"
       className={cn(
@@ -60,6 +61,8 @@ export const LikeButton = forwardRef<HTMLButtonElement, LikeButtonProps>(({
       )}
     </Button>
   );
-};
+});
+
+LikeButton.displayName = "LikeButton";
 
 export default LikeButton;
