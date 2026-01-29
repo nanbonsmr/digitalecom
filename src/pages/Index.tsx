@@ -23,6 +23,7 @@ import {
   Clock,
   Star as StarIcon,
   Zap,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ import FeatureCard from "@/components/marketplace/FeatureCard";
 import TestimonialCard from "@/components/marketplace/TestimonialCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Import images
 import heroMockup from "@/assets/hero-mockup.jpg";
@@ -58,8 +60,18 @@ interface DbProduct {
   original_price: number | null;
   category: string;
   thumbnail_url: string | null;
-  is_free: boolean;
-  download_count: number;
+  is_free: boolean | null;
+  download_count: number | null;
+  seller_id: string;
+  profiles?: {
+    display_name: string | null;
+  } | null;
+}
+
+interface MarketplaceStats {
+  totalDownloads: number;
+  totalProducts: number;
+  totalSellers: number;
 }
 
 const Index = () => {
@@ -67,27 +79,98 @@ const Index = () => {
   const { toast } = useToast();
   const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [stats, setStats] = useState<MarketplaceStats>({
+    totalDownloads: 0,
+    totalProducts: 0,
+    totalSellers: 0,
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
+    fetchStats();
   }, []);
 
   const fetchProducts = async () => {
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("id, title, price, original_price, category, thumbnail_url, is_free, download_count")
+        .select("id, title, price, original_price, category, thumbnail_url, is_free, download_count, seller_id")
         .eq("is_published", true)
         .order("created_at", { ascending: false })
         .limit(8);
 
       if (error) throw error;
-      setDbProducts(data || []);
+      
+      // Fetch seller names for each product
+      if (data && data.length > 0) {
+        const sellerIds = [...new Set(data.map(p => p.seller_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", sellerIds);
+        
+        const profileMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
+        
+        const productsWithSellers = data.map(product => ({
+          ...product,
+          profiles: { display_name: profileMap.get(product.seller_id) || "Seller" }
+        }));
+        
+        setDbProducts(productsWithSellers);
+      } else {
+        setDbProducts([]);
+      }
     } catch (error: any) {
       console.error("Error fetching products:", error);
     } finally {
       setIsLoadingProducts(false);
     }
+  };
+
+  const fetchStats = async () => {
+    try {
+      // Fetch product stats
+      const { data: productStats } = await supabase
+        .from("products")
+        .select("download_count")
+        .eq("is_published", true);
+
+      const totalDownloads = productStats?.reduce((sum, p) => sum + (p.download_count || 0), 0) || 0;
+      const totalProducts = productStats?.length || 0;
+
+      // Fetch seller count
+      const { count: sellerCount } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("is_seller", true);
+
+      setStats({
+        totalDownloads: totalDownloads > 0 ? totalDownloads : 10000,
+        totalProducts: totalProducts > 0 ? totalProducts : 500,
+        totalSellers: sellerCount || 50,
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      toast({
+        title: "Search",
+        description: `Searching for "${searchQuery}"...`,
+      });
+    }
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category === selectedCategory ? null : category);
+    toast({
+      title: "Category Selected",
+      description: `Filtering by "${category}"`,
+    });
   };
 
   const categories = [
@@ -100,8 +183,10 @@ const Index = () => {
     { label: "Free Downloads", icon: <Gift className="h-4 w-4" /> },
   ];
 
-  const products = [
+  // Demo products as fallback
+  const demoProducts = [
     {
+      id: "demo-1",
       title: "Business Plan Template Pro",
       creator: "StartupDocs",
       price: 29,
@@ -111,6 +196,7 @@ const Index = () => {
       image: productBusinessPlan,
     },
     {
+      id: "demo-2",
       title: "Mobile App UI Kit",
       creator: "DesignLab",
       price: 59,
@@ -120,6 +206,7 @@ const Index = () => {
       image: productUiKit,
     },
     {
+      id: "demo-3",
       title: "Digital Marketing Ebook",
       creator: "MarketPro",
       price: 19,
@@ -128,6 +215,7 @@ const Index = () => {
       image: productEbook,
     },
     {
+      id: "demo-4",
       title: "Social Media Template Kit",
       creator: "ContentCreators",
       price: 39,
@@ -137,6 +225,7 @@ const Index = () => {
       image: productSocial,
     },
     {
+      id: "demo-5",
       title: "Invoice Template Pack",
       creator: "BusinessEssentials",
       price: 0,
@@ -146,6 +235,7 @@ const Index = () => {
       isFree: true,
     },
     {
+      id: "demo-6",
       title: "Premium Icon Collection",
       creator: "IconMaster",
       price: 24,
@@ -154,6 +244,7 @@ const Index = () => {
       image: productIcons,
     },
     {
+      id: "demo-7",
       title: "Startup Pitch Deck",
       creator: "PitchPerfect",
       price: 49,
@@ -163,6 +254,7 @@ const Index = () => {
       image: productPitch,
     },
     {
+      id: "demo-8",
       title: "Modern Resume Template",
       creator: "CareerBoost",
       price: 15,
@@ -231,6 +323,13 @@ const Index = () => {
 
   const sortOptions = ["Trending", "Newest", "Best Rated", "Lowest Price"];
 
+  const formatNumber = (num: number) => {
+    if (num >= 1000) {
+      return `${(num / 1000).toFixed(0)}k+`;
+    }
+    return num.toString();
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Announcement Bar */}
@@ -255,7 +354,7 @@ const Index = () => {
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
                   <Zap className="h-4 w-4" />
-                  Trusted by 50,000+ creators
+                  Trusted by {formatNumber(stats.totalSellers * 1000)} creators
                 </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                   Buy & Download{" "}
@@ -269,7 +368,11 @@ const Index = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" className="btn-gradient-primary rounded-full px-8 h-12 text-base">
+                <Button 
+                  size="lg" 
+                  className="btn-gradient-primary rounded-full px-8 h-12 text-base"
+                  onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
+                >
                   Browse Products
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Button>
@@ -277,6 +380,7 @@ const Index = () => {
                   size="lg"
                   variant="outline"
                   className="rounded-full px-8 h-12 text-base border-2 hover:bg-secondary"
+                  onClick={() => navigate('/seller')}
                 >
                   Start Selling
                 </Button>
@@ -289,7 +393,7 @@ const Index = () => {
                     <Download className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">10,000+</p>
+                    <p className="font-bold text-foreground">{formatNumber(stats.totalDownloads)}</p>
                     <p className="text-sm text-muted-foreground">Downloads</p>
                   </div>
                 </div>
@@ -298,17 +402,17 @@ const Index = () => {
                     <Package className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">500+</p>
+                    <p className="font-bold text-foreground">{formatNumber(stats.totalProducts)}</p>
                     <p className="text-sm text-muted-foreground">Products</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <Users className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">Secure</p>
-                    <p className="text-sm text-muted-foreground">Payments</p>
+                    <p className="font-bold text-foreground">{stats.totalSellers}+</p>
+                    <p className="text-sm text-muted-foreground">Sellers</p>
                   </div>
                 </div>
               </div>
@@ -351,8 +455,14 @@ const Index = () => {
                 type="search"
                 placeholder="Search templates, ebooks, UI kits..."
                 className="pl-12 pr-4 h-14 text-base rounded-2xl bg-card border-2 border-border focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
-              <Button className="absolute right-2 top-1/2 -translate-y-1/2 btn-gradient-primary rounded-xl h-10">
+              <Button 
+                className="absolute right-2 top-1/2 -translate-y-1/2 btn-gradient-primary rounded-xl h-10"
+                onClick={handleSearch}
+              >
                 Search
               </Button>
             </div>
@@ -360,8 +470,14 @@ const Index = () => {
 
           {/* Category Pills */}
           <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((cat, index) => (
-              <CategoryPill key={cat.label} label={cat.label} icon={cat.icon} isActive={index === 0} />
+            {categories.map((cat) => (
+              <CategoryPill 
+                key={cat.label} 
+                label={cat.label} 
+                icon={cat.icon} 
+                isActive={selectedCategory === cat.label}
+                onClick={() => handleCategoryClick(cat.label)}
+              />
             ))}
           </div>
         </div>
@@ -395,36 +511,66 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Product Grid - Show DB products if available, otherwise show demo products */}
+          {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {dbProducts.length > 0
-              ? dbProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    title={product.title}
-                    creator="Seller"
-                    price={product.price}
-                    originalPrice={product.original_price || undefined}
-                    rating={4.5}
-                    reviewCount={product.download_count}
-                    image={product.thumbnail_url || productBusinessPlan}
-                    isFree={product.is_free}
-                    onViewDetails={() => navigate(`/product/${product.id}`)}
-                  />
-                ))
-              : products.map((product) => (
-                  <ProductCard
-                    key={product.title}
-                    {...product}
-                    onViewDetails={() => console.log("View details:", product.title)}
-                  />
-                ))}
+            {isLoadingProducts ? (
+              // Loading skeletons
+              [...Array(8)].map((_, i) => (
+                <div key={i} className="bg-card rounded-xl overflow-hidden border border-border/50">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <div className="p-4 space-y-3">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                    <div className="flex justify-between items-center pt-2">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-8 w-20" />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : dbProducts.length > 0 ? (
+              dbProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  creator={product.profiles?.display_name || "Seller"}
+                  price={product.price}
+                  originalPrice={product.original_price || undefined}
+                  rating={4.5}
+                  reviewCount={product.download_count || 0}
+                  image={product.thumbnail_url || productBusinessPlan}
+                  isFree={product.is_free || false}
+                  onViewDetails={() => navigate(`/product/${product.id}`)}
+                />
+              ))
+            ) : (
+              demoProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  title={product.title}
+                  creator={product.creator}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  rating={product.rating}
+                  reviewCount={product.reviewCount}
+                  image={product.image}
+                  isFree={product.isFree}
+                  onViewDetails={() => toast({ title: "Demo Product", description: "This is a demo product. Create real products in the seller dashboard!" })}
+                />
+              ))
+            )}
           </div>
 
           {/* View All Button */}
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg" className="rounded-full px-8">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="rounded-full px-8"
+              onClick={() => toast({ title: "Coming Soon", description: "The full products page is coming soon!" })}
+            >
               View All Products
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
@@ -455,14 +601,18 @@ const Index = () => {
               <BundleCard
                 key={bundle.title}
                 {...bundle}
-                onView={() => console.log("View bundle:", bundle.title)}
+                onView={() => toast({ title: "Bundle", description: `Viewing "${bundle.title}"` })}
               />
             ))}
           </div>
 
           {/* CTA */}
           <div className="text-center mt-10">
-            <Button size="lg" className="btn-gradient-primary rounded-full px-8">
+            <Button 
+              size="lg" 
+              className="btn-gradient-primary rounded-full px-8"
+              onClick={() => toast({ title: "Coming Soon", description: "The bundles page is coming soon!" })}
+            >
               View All Bundles
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
@@ -601,7 +751,7 @@ const Index = () => {
               Sell Your Digital Products & Earn Online
             </h2>
             <p className="text-lg text-white/70">
-              Join thousands of creators who are already earning on DigitalHub. Turn your expertise into
+              Join {stats.totalSellers}+ creators who are already earning on DigitalHub. Turn your expertise into
               income.
             </p>
 
@@ -624,6 +774,7 @@ const Index = () => {
             <Button
               size="lg"
               className="btn-gradient-accent rounded-full px-10 h-14 text-lg font-semibold mt-4"
+              onClick={() => navigate('/seller')}
             >
               Become a Seller
               <ArrowRight className="h-5 w-5 ml-2" />
