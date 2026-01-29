@@ -330,44 +330,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Search + Categories Section */}
-      <section id="categories" className="py-12 border-b border-border">
-        <div className="container space-y-8">
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search templates, ebooks, UI kits..."
-                className="pl-12 pr-4 h-14 text-base rounded-2xl bg-card border-2 border-border focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              <Button 
-                className="absolute right-2 top-1/2 -translate-y-1/2 btn-gradient-primary rounded-xl h-10"
-                onClick={handleSearch}
-              >
-                Search
-              </Button>
-            </div>
-          </div>
-
-          {/* Category Pills */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((cat) => (
-              <CategoryPill 
-                key={cat.label} 
-                label={cat.label} 
-                icon={cat.icon} 
-                isActive={selectedCategory === cat.label}
-                onClick={() => handleCategoryClick(cat.label)}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Featured Products Section */}
       <section id="products" className="py-16 lg:py-20">
