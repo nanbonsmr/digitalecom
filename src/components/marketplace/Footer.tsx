@@ -1,48 +1,49 @@
+import { forwardRef } from "react";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const Footer = () => {
-  const footerLinks = {
-    categories: [
-      { label: "Business Templates", href: "#" },
-      { label: "Design Assets", href: "#" },
-      { label: "Ebooks & Guides", href: "#" },
-      { label: "UI Kits", href: "#" },
-      { label: "Resume Templates", href: "#" },
-    ],
-    support: [
-      { label: "Help Center", href: "#" },
-      { label: "Contact Us", href: "#" },
-      { label: "FAQs", href: "#" },
-      { label: "Report an Issue", href: "#" },
-      { label: "Community", href: "#" },
-    ],
-    company: [
-      { label: "About Us", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "Press", href: "#" },
-      { label: "Partners", href: "#" },
-    ],
-    legal: [
-      { label: "Terms of Service", href: "#" },
-      { label: "Privacy Policy", href: "#" },
-      { label: "Cookie Policy", href: "#" },
-      { label: "License", href: "#" },
-    ],
-  };
+const footerLinks = {
+  categories: [
+    { label: "Business Templates", href: "#" },
+    { label: "Design Assets", href: "#" },
+    { label: "Ebooks & Guides", href: "#" },
+    { label: "UI Kits", href: "#" },
+    { label: "Resume Templates", href: "#" },
+  ],
+  support: [
+    { label: "Help Center", href: "#" },
+    { label: "Contact Us", href: "#" },
+    { label: "FAQs", href: "#" },
+    { label: "Report an Issue", href: "#" },
+    { label: "Community", href: "#" },
+  ],
+  company: [
+    { label: "About Us", href: "#" },
+    { label: "Careers", href: "#" },
+    { label: "Blog", href: "#" },
+    { label: "Press", href: "#" },
+    { label: "Partners", href: "#" },
+  ],
+  legal: [
+    { label: "Terms of Service", href: "#" },
+    { label: "Privacy Policy", href: "#" },
+    { label: "Cookie Policy", href: "#" },
+    { label: "License", href: "#" },
+  ],
+};
 
-  const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Youtube, href: "#", label: "YouTube" },
-  ];
+const socialLinks = [
+  { icon: Facebook, href: "#", label: "Facebook" },
+  { icon: Twitter, href: "#", label: "Twitter" },
+  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Youtube, href: "#", label: "YouTube" },
+];
 
+export const Footer = forwardRef<HTMLElement>((_, ref) => {
   return (
-    <footer className="dark-gradient text-muted-foreground">
+    <footer ref={ref} className="dark-gradient text-muted-foreground">
       <div className="container py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
           {/* Brand & Newsletter */}
@@ -161,6 +162,8 @@ export const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = "Footer";
 
 export default Footer;
