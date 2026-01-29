@@ -196,19 +196,26 @@ const Index = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="hero-gradient py-10 md:py-16 lg:py-24 overflow-hidden">
-        <div className="container px-4">
+      <section className="hero-gradient dark:bg-gradient-to-br dark:from-background dark:via-background dark:to-primary/10 py-10 md:py-16 lg:py-24 overflow-hidden relative">
+        {/* Dark mode decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none dark:block hidden">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+        </div>
+        
+        <div className="container px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="space-y-6 md:space-y-8 text-center lg:text-left">
               <div className="space-y-3 md:space-y-4">
-                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium">
+                <div className="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium border border-primary/20 dark:border-primary/30">
                   <Zap className="h-3 w-3 md:h-4 md:w-4" />
                   Trusted by {formatNumber(stats.totalSellers * 1000)} creators
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
                   Buy & Download{" "}
-                  <span className="text-primary">Premium Digital Assets</span> Instantly
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70 dark:from-primary dark:to-accent">Premium Digital Assets</span> Instantly
                 </h1>
                 <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0">
                   PDFs, ZIP packs, templates, UI kits, ebooks, and tools for creators and
@@ -220,7 +227,7 @@ const Index = () => {
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
                 <Button 
                   size="lg" 
-                  className="btn-gradient-primary rounded-full px-6 md:px-8 h-11 md:h-12 text-sm md:text-base"
+                  className="btn-gradient-primary rounded-full px-6 md:px-8 h-11 md:h-12 text-sm md:text-base shadow-lg shadow-primary/25 dark:shadow-primary/40"
                   onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   Browse Products
@@ -229,7 +236,7 @@ const Index = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="rounded-full px-6 md:px-8 h-11 md:h-12 text-sm md:text-base border-2 hover:bg-secondary"
+                  className="rounded-full px-6 md:px-8 h-11 md:h-12 text-sm md:text-base border-2 hover:bg-secondary dark:border-border dark:hover:bg-primary/10 dark:hover:border-primary/50 transition-all"
                   onClick={() => navigate('/seller')}
                 >
                   Start Selling
@@ -238,8 +245,8 @@ const Index = () => {
 
               {/* Stats */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-8 pt-2 md:pt-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="flex items-center gap-2 group">
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Download className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
@@ -247,8 +254,8 @@ const Index = () => {
                     <p className="text-xs md:text-sm text-muted-foreground">Downloads</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="flex items-center gap-2 group">
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Package className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
@@ -256,8 +263,8 @@ const Index = () => {
                     <p className="text-xs md:text-sm text-muted-foreground">Products</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="flex items-center gap-2 group">
+                  <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                   </div>
                   <div>
@@ -271,13 +278,15 @@ const Index = () => {
             {/* Right - Hero Image */}
             <div className="relative lg:pl-8">
               <div className="relative animate-float">
+                {/* Glow effect behind image in dark mode */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-accent/20 rounded-2xl blur-2xl scale-105 dark:opacity-60 opacity-0 transition-opacity" />
                 <img
                   src={heroMockup}
                   alt="Digital product marketplace preview"
-                  className="w-full h-auto rounded-2xl shadow-2xl"
+                  className="w-full h-auto rounded-2xl shadow-2xl relative z-10 dark:ring-1 dark:ring-white/10"
                 />
                 {/* Floating badge */}
-                <div className="absolute -left-4 top-1/4 bg-card rounded-xl p-4 shadow-lg border border-border animate-pulse-soft hidden md:block">
+                <div className="absolute -left-4 top-1/4 bg-card rounded-xl p-4 shadow-lg border border-border dark:border-primary/20 animate-pulse-soft hidden md:block dark:bg-card/90 dark:backdrop-blur-sm">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center">
                       <Download className="h-5 w-5 text-success" />
