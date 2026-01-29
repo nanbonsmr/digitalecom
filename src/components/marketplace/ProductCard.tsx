@@ -1,8 +1,10 @@
 import { Star, ShoppingCart, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
+  id?: string;
   title: string;
   creator: string;
   price: number;
@@ -16,6 +18,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({
+  id,
   title,
   creator,
   price,
@@ -29,8 +32,8 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const discount = originalPrice ? Math.round((1 - price / originalPrice) * 100) : 0;
 
-  return (
-    <div className="group bg-card rounded-xl overflow-hidden card-hover border border-border/50">
+  const CardContent = (
+    <>
       {/* Image Container */}
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
@@ -57,7 +60,11 @@ export const ProductCard = ({
             size="icon"
             variant="secondary"
             className="h-9 w-9 rounded-full shadow-lg bg-card hover:bg-card"
-            onClick={onViewDetails}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onViewDetails?.();
+            }}
           >
             <Eye className="h-4 w-4" />
           </Button>
@@ -109,13 +116,34 @@ export const ProductCard = ({
           <Button
             size="sm"
             className="btn-gradient-primary rounded-full px-4"
-            onClick={onAddToCart}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onAddToCart?.();
+            }}
           >
             <ShoppingCart className="h-4 w-4 mr-1.5" />
             Add
           </Button>
         </div>
       </div>
+    </>
+  );
+
+  if (id) {
+    return (
+      <Link 
+        to={`/product/${id}`} 
+        className="group bg-card rounded-xl overflow-hidden card-hover border border-border/50 block"
+      >
+        {CardContent}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="group bg-card rounded-xl overflow-hidden card-hover border border-border/50">
+      {CardContent}
     </div>
   );
 };
