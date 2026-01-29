@@ -20,12 +20,10 @@ export const Navbar = () => {
   const { user, profile, signOut, loading } = useAuth();
 
   const navLinks = [
-    { label: "Home", href: "#" },
-    { label: "Browse", href: "#products" },
-    { label: "Categories", href: "#categories" },
-    { label: "Pricing", href: "#" },
-    { label: "Sell", href: "#seller" },
-    { label: "Support", href: "#" },
+    { label: "Home", href: "/" },
+    { label: "Products", href: "/products" },
+    { label: "Categories", href: "/products" },
+    { label: "Sell", href: "/seller" },
   ];
 
   const handleSignOut = async () => {
@@ -47,23 +45,23 @@ export const Navbar = () => {
       <div className="container">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 shrink-0">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">D</span>
             </div>
             <span className="font-bold text-xl text-foreground hidden sm:block">DigitalHub</span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to={link.href}
                 className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors link-hover"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -174,13 +172,14 @@ export const Navbar = () => {
 
           <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to={link.href}
                 className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <div className="flex gap-2 mt-2 sm:hidden">
               {user ? (
