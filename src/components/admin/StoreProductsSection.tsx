@@ -46,6 +46,7 @@ interface Product {
   original_price: number | null;
   category: string;
   thumbnail_url: string | null;
+  file_url: string | null;
   is_free: boolean | null;
   is_published: boolean | null;
   is_pinned: boolean | null;
