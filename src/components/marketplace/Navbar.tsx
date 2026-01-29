@@ -118,10 +118,10 @@ export const Navbar = () => {
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <a href="#" className="cursor-pointer">
+                      <Link to="/profile" className="cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         Profile
-                      </a>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
