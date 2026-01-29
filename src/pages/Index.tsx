@@ -23,6 +23,7 @@ import Navbar from "@/components/marketplace/Navbar";
 import Footer from "@/components/marketplace/Footer";
 import ProductCard from "@/components/marketplace/ProductCard";
 import FeaturedCategories from "@/components/marketplace/FeaturedCategories";
+import NewsletterSection from "@/components/marketplace/NewsletterSection";
 
 import FeatureCard from "@/components/marketplace/FeatureCard";
 import TestimonialCard from "@/components/marketplace/TestimonialCard";
@@ -556,6 +557,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Newsletter Section */}
+      <NewsletterSection />
 
       <Footer />
     </div>
