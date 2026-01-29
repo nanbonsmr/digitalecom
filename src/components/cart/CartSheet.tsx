@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { ShoppingCart, Trash2, Plus, Minus, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 
-export const CartSheet = () => {
+export const CartSheet = forwardRef<HTMLDivElement>((_, ref) => {
   const { items, itemCount, total, removeFromCart, updateQuantity, isLoading } = useCart();
   const { user } = useAuth();
 
@@ -30,7 +31,7 @@ export const CartSheet = () => {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col w-full sm:max-w-lg">
+      <SheetContent ref={ref} className="flex flex-col w-full sm:max-w-lg">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
@@ -158,6 +159,8 @@ export const CartSheet = () => {
       </SheetContent>
     </Sheet>
   );
-};
+});
+
+CartSheet.displayName = "CartSheet";
 
 export default CartSheet;

@@ -45,13 +45,6 @@ import bundleBusiness from "@/assets/bundle-business.jpg";
 import bundleResume from "@/assets/bundle-resume.jpg";
 import bundleBranding from "@/assets/bundle-branding.jpg";
 import productBusinessPlan from "@/assets/product-business-plan.jpg";
-import productUiKit from "@/assets/product-ui-kit.jpg";
-import productEbook from "@/assets/product-ebook.jpg";
-import productSocial from "@/assets/product-social.jpg";
-import productInvoice from "@/assets/product-invoice.jpg";
-import productIcons from "@/assets/product-icons.jpg";
-import productPitch from "@/assets/product-pitch.jpg";
-import productResume from "@/assets/product-resume.jpg";
 
 interface DbProduct {
   id: string;
@@ -183,86 +176,11 @@ const Index = () => {
     { label: "Free Downloads", icon: <Gift className="h-4 w-4" /> },
   ];
 
-  // Demo products as fallback
-  const demoProducts = [
-    {
-      id: "demo-1",
-      title: "Business Plan Template Pro",
-      creator: "StartupDocs",
-      price: 29,
-      originalPrice: 49,
-      rating: 4.8,
-      reviewCount: 234,
-      image: productBusinessPlan,
-    },
-    {
-      id: "demo-2",
-      title: "Mobile App UI Kit",
-      creator: "DesignLab",
-      price: 59,
-      originalPrice: 89,
-      rating: 4.9,
-      reviewCount: 567,
-      image: productUiKit,
-    },
-    {
-      id: "demo-3",
-      title: "Digital Marketing Ebook",
-      creator: "MarketPro",
-      price: 19,
-      rating: 4.7,
-      reviewCount: 189,
-      image: productEbook,
-    },
-    {
-      id: "demo-4",
-      title: "Social Media Template Kit",
-      creator: "ContentCreators",
-      price: 39,
-      originalPrice: 59,
-      rating: 4.6,
-      reviewCount: 312,
-      image: productSocial,
-    },
-    {
-      id: "demo-5",
-      title: "Invoice Template Pack",
-      creator: "BusinessEssentials",
-      price: 0,
-      rating: 4.5,
-      reviewCount: 89,
-      image: productInvoice,
-      isFree: true,
-    },
-    {
-      id: "demo-6",
-      title: "Premium Icon Collection",
-      creator: "IconMaster",
-      price: 24,
-      rating: 4.9,
-      reviewCount: 445,
-      image: productIcons,
-    },
-    {
-      id: "demo-7",
-      title: "Startup Pitch Deck",
-      creator: "PitchPerfect",
-      price: 49,
-      originalPrice: 79,
-      rating: 4.8,
-      reviewCount: 178,
-      image: productPitch,
-    },
-    {
-      id: "demo-8",
-      title: "Modern Resume Template",
-      creator: "CareerBoost",
-      price: 15,
-      rating: 4.7,
-      reviewCount: 623,
-      image: productResume,
-    },
-  ];
+  // Empty state message when no products
+  const emptyStateMessage = {
+    title: "No products yet",
+    description: "Be the first to upload a product! Start selling your digital assets today."
+  };
 
   const bundles = [
     {
@@ -546,20 +464,22 @@ const Index = () => {
                 />
               ))
             ) : (
-              demoProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  title={product.title}
-                  creator={product.creator}
-                  price={product.price}
-                  originalPrice={product.originalPrice}
-                  rating={product.rating}
-                  reviewCount={product.reviewCount}
-                  image={product.image}
-                  isFree={product.isFree}
-                  onViewDetails={() => toast({ title: "Demo Product", description: "This is a demo product. Create real products in the seller dashboard!" })}
-                />
-              ))
+              <div className="col-span-full text-center py-16">
+                <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  {emptyStateMessage.title}
+                </h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  {emptyStateMessage.description}
+                </p>
+                <Button 
+                  className="btn-gradient-primary rounded-full px-8"
+                  onClick={() => navigate('/seller')}
+                >
+                  Start Selling
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
             )}
           </div>
 
@@ -569,7 +489,7 @@ const Index = () => {
               variant="outline" 
               size="lg" 
               className="rounded-full px-8"
-              onClick={() => toast({ title: "Coming Soon", description: "The full products page is coming soon!" })}
+              onClick={() => navigate('/products')}
             >
               View All Products
               <ArrowRight className="h-4 w-4 ml-2" />

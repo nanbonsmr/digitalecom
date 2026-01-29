@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Link } from "react-router-dom";
 import { Search, Menu, X, User, LogOut, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CartSheet } from "@/components/cart/CartSheet";
 
-export const Navbar = () => {
+export const Navbar = forwardRef<HTMLElement>((_, ref) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, profile, signOut, loading } = useAuth();
 
@@ -41,7 +41,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
+    <header ref={ref} className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border">
       <div className="container">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
@@ -203,6 +203,8 @@ export const Navbar = () => {
       </div>
     </header>
   );
-};
+});
+
+Navbar.displayName = "Navbar";
 
 export default Navbar;
