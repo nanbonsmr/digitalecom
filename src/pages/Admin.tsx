@@ -11,6 +11,7 @@ import {
   Search,
   AlertTriangle,
   Crown,
+  FileCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/marketplace/Navbar";
+import ProductModerationSection from "@/components/admin/ProductModerationSection";
 
 interface Profile {
   id: string;
@@ -63,6 +65,7 @@ interface Stats {
   totalSellers: number;
   totalProducts: number;
   pendingRequests: number;
+  pendingProducts: number;
 }
 
 const Admin = () => {
@@ -79,6 +82,7 @@ const Admin = () => {
     totalSellers: 0,
     totalProducts: 0,
     pendingRequests: 0,
+    pendingProducts: 0,
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -157,6 +161,11 @@ const Admin = () => {
         .from("products")
         .select("*", { count: "exact", head: true });
 
+      const { count: pendingProductCount } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true })
+        .eq("moderation_status", "pending");
+
       const sellers = profilesData?.filter((p) => p.is_seller) || [];
       const pending = profilesData?.filter((p) => p.seller_request_pending) || [];
 
@@ -165,6 +174,7 @@ const Admin = () => {
         totalSellers: sellers.length,
         totalProducts: productCount || 0,
         pendingRequests: pending.length,
+        pendingProducts: pendingProductCount || 0,
       });
     } catch (error: any) {
       toast({
@@ -291,7 +301,7 @@ const Admin = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-4 mb-8">
+        <div className="grid gap-4 md:grid-cols-5 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -319,9 +329,20 @@ const Admin = () => {
               <div className="text-2xl font-bold">{stats.totalProducts}</div>
             </CardContent>
           </Card>
+          <Card className={stats.pendingProducts > 0 ? "border-primary/50" : ""}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Products</CardTitle>
+              <FileCheck className={`h-4 w-4 ${stats.pendingProducts > 0 ? "text-primary" : "text-muted-foreground"}`} />
+            </CardHeader>
+            <CardContent>
+              <div className={`text-2xl font-bold ${stats.pendingProducts > 0 ? "text-primary" : ""}`}>
+                {stats.pendingProducts}
+              </div>
+            </CardContent>
+          </Card>
           <Card className={stats.pendingRequests > 0 ? "border-amber-500/50" : ""}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
+              <CardTitle className="text-sm font-medium">Seller Requests</CardTitle>
               <AlertTriangle className={`h-4 w-4 ${stats.pendingRequests > 0 ? "text-amber-500" : "text-muted-foreground"}`} />
             </CardHeader>
             <CardContent>
@@ -333,12 +354,20 @@ const Admin = () => {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="users" className="space-y-6">
+        <Tabs defaultValue="products" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="products" className="relative">
+              Products
+              {stats.pendingProducts > 0 && (
+                <span className="ml-2 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                  {stats.pendingProducts}
+                </span>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="users">All Users</TabsTrigger>
             <TabsTrigger value="sellers">Sellers</TabsTrigger>
             <TabsTrigger value="pending" className="relative">
-              Pending Requests
+              Seller Requests
               {stats.pendingRequests > 0 && (
                 <span className="ml-2 h-5 w-5 rounded-full bg-amber-500 text-white text-xs flex items-center justify-center">
                   {stats.pendingRequests}
@@ -346,6 +375,11 @@ const Admin = () => {
               )}
             </TabsTrigger>
           </TabsList>
+
+          {/* Products Tab */}
+          <TabsContent value="products" className="space-y-4">
+            <ProductModerationSection onProductModerated={fetchData} />
+          </TabsContent>
 
           {/* All Users Tab */}
           <TabsContent value="users" className="space-y-4">
