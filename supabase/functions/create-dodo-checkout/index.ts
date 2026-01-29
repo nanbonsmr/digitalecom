@@ -94,8 +94,8 @@ serve(async (req) => {
       );
     }
 
-    // Create Dodo Payments checkout session
-    const dodoResponse = await fetch('https://api.dodopayments.com/payments', {
+    // Create Dodo Payments checkout session (use test.dodopayments.com for test mode, live.dodopayments.com for production)
+    const dodoResponse = await fetch('https://test.dodopayments.com/payments', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${DODO_API_KEY}`,
