@@ -44,10 +44,10 @@ const socialLinks = [
 export const Footer = forwardRef<HTMLElement>((_, ref) => {
   return (
     <footer ref={ref} className="dark-gradient text-muted-foreground">
-      <div className="container py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10">
+      <div className="container py-10 md:py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 md:gap-10">
           {/* Brand & Newsletter */}
-          <div className="lg:col-span-2">
+          <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-2">
             <a href="#" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">D</span>
@@ -61,7 +61,7 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
             {/* Newsletter */}
             <div className="space-y-3">
               <p className="text-sm font-medium text-white">Subscribe to our newsletter</p>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -93,11 +93,11 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
 
           {/* Links Columns */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Categories</h4>
-            <ul className="space-y-2.5">
+            <h4 className="font-semibold text-white mb-3 md:mb-4 text-sm md:text-base">Categories</h4>
+            <ul className="space-y-2 md:space-y-2.5">
               {footerLinks.categories.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm hover:text-white transition-colors">
+                  <a href={link.href} className="text-xs md:text-sm hover:text-white transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -106,11 +106,11 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
           </div>
 
           <div>
-            <h4 className="font-semibold text-white mb-4">Support</h4>
-            <ul className="space-y-2.5">
+            <h4 className="font-semibold text-white mb-3 md:mb-4 text-sm md:text-base">Support</h4>
+            <ul className="space-y-2 md:space-y-2.5">
               {footerLinks.support.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm hover:text-white transition-colors">
+                  <a href={link.href} className="text-xs md:text-sm hover:text-white transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -118,12 +118,12 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-white mb-4">Company</h4>
-            <ul className="space-y-2.5">
+          <div className="hidden md:block">
+            <h4 className="font-semibold text-white mb-3 md:mb-4 text-sm md:text-base">Company</h4>
+            <ul className="space-y-2 md:space-y-2.5">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm hover:text-white transition-colors">
+                  <a href={link.href} className="text-xs md:text-sm hover:text-white transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -131,12 +131,12 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-white mb-4">Legal</h4>
-            <ul className="space-y-2.5">
+          <div className="hidden md:block">
+            <h4 className="font-semibold text-white mb-3 md:mb-4 text-sm md:text-base">Legal</h4>
+            <ul className="space-y-2 md:space-y-2.5">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm hover:text-white transition-colors">
+                  <a href={link.href} className="text-xs md:text-sm hover:text-white transition-colors">
                     {link.label}
                   </a>
                 </li>
@@ -146,16 +146,16 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground/70">
+        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs md:text-sm text-muted-foreground/70 text-center sm:text-left">
             © {new Date().getFullYear()} DigitalHub. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-muted-foreground/70">Accepted Payments:</span>
+          <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm">
+            <span className="text-muted-foreground/70 hidden sm:inline">Accepted Payments:</span>
             <div className="flex items-center gap-2">
-              <div className="h-6 px-2 bg-white/10 rounded flex items-center justify-center text-xs font-medium text-white">VISA</div>
-              <div className="h-6 px-2 bg-white/10 rounded flex items-center justify-center text-xs font-medium text-white">MC</div>
-              <div className="h-6 px-2 bg-white/10 rounded flex items-center justify-center text-xs font-medium text-white">PayPal</div>
+              <div className="h-5 md:h-6 px-2 bg-white/10 rounded flex items-center justify-center text-[10px] md:text-xs font-medium text-white">VISA</div>
+              <div className="h-5 md:h-6 px-2 bg-white/10 rounded flex items-center justify-center text-[10px] md:text-xs font-medium text-white">MC</div>
+              <div className="h-5 md:h-6 px-2 bg-white/10 rounded flex items-center justify-center text-[10px] md:text-xs font-medium text-white">PayPal</div>
             </div>
           </div>
         </div>

@@ -86,43 +86,43 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3">
+        <div className="p-3 md:p-4 space-y-2 md:space-y-3">
           {/* Title & Creator */}
           <div>
-            <h3 className="font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+            <h3 className="font-semibold text-sm md:text-base text-foreground line-clamp-1 group-hover:text-primary transition-colors">
               {title}
             </h3>
-            <p className="text-sm text-muted-foreground mt-0.5">by {creator}</p>
+            <p className="text-xs md:text-sm text-muted-foreground mt-0.5">by {creator}</p>
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 md:gap-1.5">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
                   className={cn(
-                    "h-3.5 w-3.5",
+                    "h-3 w-3 md:h-3.5 md:w-3.5",
                     i < Math.floor(rating) ? "fill-gold text-gold" : "text-muted-foreground/30"
                   )}
                 />
               ))}
             </div>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-[10px] md:text-xs text-muted-foreground">
               {rating.toFixed(1)} ({reviewCount})
             </span>
           </div>
 
           {/* Price & Action */}
           <div className="flex items-center justify-between pt-1">
-            <div className="flex items-baseline gap-2">
+            <div className="flex items-baseline gap-1 md:gap-2">
               {isFree ? (
-                <span className="text-lg font-bold text-success">Free</span>
+                <span className="text-sm md:text-lg font-bold text-success">Free</span>
               ) : (
                 <>
-                  <span className="text-lg font-bold text-foreground">${price}</span>
+                  <span className="text-sm md:text-lg font-bold text-foreground">${price}</span>
                   {originalPrice && (
-                    <span className="text-sm text-muted-foreground line-through">${originalPrice}</span>
+                    <span className="text-xs md:text-sm text-muted-foreground line-through">${originalPrice}</span>
                   )}
                 </>
               )}
@@ -130,7 +130,7 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             <Button
               size="sm"
               className={cn(
-                "rounded-full px-4",
+                "rounded-full px-2.5 md:px-4 h-7 md:h-8 text-xs md:text-sm",
                 inCart ? "bg-success hover:bg-success/90" : "btn-gradient-primary"
               )}
               onClick={handleAddToCart}
@@ -138,13 +138,13 @@ export const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             >
               {inCart ? (
                 <>
-                  <Check className="h-4 w-4 mr-1.5" />
-                  Added
+                  <Check className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+                  <span className="hidden sm:inline">Added</span>
                 </>
               ) : (
                 <>
-                  <ShoppingCart className="h-4 w-4 mr-1.5" />
-                  Add
+                  <ShoppingCart className="h-3 w-3 md:h-4 md:w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Add</span>
                 </>
               )}
             </Button>
