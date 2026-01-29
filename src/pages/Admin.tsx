@@ -19,6 +19,8 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import StoreOverviewSection from "@/components/admin/StoreOverviewSection";
 import StoreProductsSection from "@/components/admin/StoreProductsSection";
 import CustomersSection from "@/components/admin/CustomersSection";
+import AnalyticsSection from "@/components/admin/AnalyticsSection";
+import NewsletterSection from "@/components/admin/NewsletterSection";
 
 interface Profile {
   id: string;
@@ -269,12 +271,16 @@ const Admin = () => {
             <StoreProductsSection onProductChange={fetchData} />
           )}
 
+          {activeSection === "analytics" && <AnalyticsSection />}
+
           {activeSection === "users" && (
             <CustomersSection
               profiles={profiles}
               isLoading={isLoading}
             />
           )}
+
+          {activeSection === "newsletter" && <NewsletterSection />}
 
           {activeSection === "settings" && (
             <div className="space-y-6">
