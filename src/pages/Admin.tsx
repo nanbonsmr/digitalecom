@@ -1,16 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader2, Menu, Bell, Search, Plus } from "lucide-react";
+import { Loader2, Menu, Bell, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -21,7 +15,6 @@ import StoreProductsSection from "@/components/admin/StoreProductsSection";
 import CustomersSection from "@/components/admin/CustomersSection";
 import AnalyticsSection from "@/components/admin/AnalyticsSection";
 import NewsletterSection from "@/components/admin/NewsletterSection";
-
 interface Profile {
   id: string;
   user_id: string;
@@ -29,25 +22,28 @@ interface Profile {
   avatar_url: string | null;
   created_at: string;
 }
-
 interface Stats {
   totalCustomers: number;
   totalProducts: number;
   publishedProducts: number;
 }
-
 const Admin = () => {
-  const { user, profile, loading } = useAuth();
-  const { toast } = useToast();
+  const {
+    user,
+    profile,
+    loading
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
-
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalCustomers: 0,
     totalProducts: 0,
-    publishedProducts: 0,
+    publishedProducts: 0
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -61,20 +57,15 @@ const Admin = () => {
         setCheckingAdmin(false);
         return;
       }
-
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-
+      const {
+        data,
+        error
+      } = await supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle();
       if (!error && data) {
         setIsAdmin(true);
       }
       setCheckingAdmin(false);
     };
-
     if (!loading) {
       checkAdminStatus();
     }
@@ -90,7 +81,7 @@ const Admin = () => {
         toast({
           title: "Access Denied",
           description: "You don't have permission to access the store dashboard.",
-          variant: "destructive",
+          variant: "destructive"
         });
       }
     }
@@ -102,104 +93,81 @@ const Admin = () => {
       fetchData();
     }
   }, [isAdmin]);
-
   const fetchData = async () => {
     setIsLoading(true);
     try {
       // Fetch all customer profiles (excluding admin)
-      const { data: profilesData, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, user_id, display_name, avatar_url, created_at")
-        .order("created_at", { ascending: false });
-
+      const {
+        data: profilesData,
+        error: profilesError
+      } = await supabase.from("profiles").select("id, user_id, display_name, avatar_url, created_at").order("created_at", {
+        ascending: false
+      });
       if (profilesError) throw profilesError;
-      
+
       // Filter out admin user from customers
       const customers = profilesData?.filter(p => p.user_id !== user?.id) || [];
       setProfiles(customers);
 
       // Fetch product stats
-      const { count: productCount } = await supabase
-        .from("products")
-        .select("*", { count: "exact", head: true });
-
-      const { count: publishedCount } = await supabase
-        .from("products")
-        .select("*", { count: "exact", head: true })
-        .eq("is_published", true)
-        .eq("moderation_status", "approved");
-
+      const {
+        count: productCount
+      } = await supabase.from("products").select("*", {
+        count: "exact",
+        head: true
+      });
+      const {
+        count: publishedCount
+      } = await supabase.from("products").select("*", {
+        count: "exact",
+        head: true
+      }).eq("is_published", true).eq("moderation_status", "approved");
       setStats({
         totalCustomers: customers.length,
         totalProducts: productCount || 0,
-        publishedProducts: publishedCount || 0,
+        publishedProducts: publishedCount || 0
       });
     } catch (error: any) {
       toast({
         title: "Error loading data",
         description: error.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
   };
-
   if (loading || checkingAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+    return <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+      </div>;
   }
-
   if (!isAdmin) {
     return null;
   }
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden lg:block">
-        <AdminSidebar
-          isCollapsed={isSidebarCollapsed}
-          onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-        />
+        <AdminSidebar isCollapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} activeSection={activeSection} onSectionChange={setActiveSection} />
       </div>
 
       {/* Mobile Sidebar */}
       <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
         <SheetContent side="left" className="p-0 w-64">
-          <AdminSidebar
-            isCollapsed={false}
-            onToggle={() => {}}
-            activeSection={activeSection}
-            onSectionChange={(section) => {
-              setActiveSection(section);
-              setIsMobileSidebarOpen(false);
-            }}
-          />
+          <AdminSidebar isCollapsed={false} onToggle={() => {}} activeSection={activeSection} onSectionChange={section => {
+          setActiveSection(section);
+          setIsMobileSidebarOpen(false);
+        }} />
         </SheetContent>
       </Sheet>
 
       {/* Main Content */}
-      <div
-        className={`transition-all duration-300 ${
-          isSidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
-        }`}
-      >
+      <div className={`transition-all duration-300 ${isSidebarCollapsed ? "lg:ml-16" : "lg:ml-64"}`}>
         {/* Top Header */}
         <header className="sticky top-0 z-30 bg-card/95 backdrop-blur-md border-b border-border h-16 flex items-center px-4 lg:px-6">
           <div className="flex items-center justify-between w-full gap-4">
             {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsMobileSidebarOpen(true)}
-            >
+            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsMobileSidebarOpen(true)}>
               <Menu className="h-5 w-5" />
             </Button>
 
@@ -212,22 +180,11 @@ const Admin = () => {
             </div>
 
             {/* Search */}
-            <div className="flex-1 max-w-md mx-4 hidden md:block">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search products or customers..."
-                  className="pl-10 h-10 rounded-full bg-muted/50 border-0"
-                />
-              </div>
-            </div>
+            
 
             {/* Right Actions */}
             <div className="flex items-center gap-2">
-              <Button 
-                className="btn-gradient-primary"
-                onClick={() => setActiveSection("products")}
-              >
+              <Button className="btn-gradient-primary" onClick={() => setActiveSection("products")}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
@@ -263,27 +220,17 @@ const Admin = () => {
 
         {/* Dashboard Content */}
         <main className="p-4 lg:p-6">
-          {activeSection === "overview" && (
-            <StoreOverviewSection stats={stats} onNavigate={setActiveSection} />
-          )}
+          {activeSection === "overview" && <StoreOverviewSection stats={stats} onNavigate={setActiveSection} />}
 
-          {activeSection === "products" && (
-            <StoreProductsSection onProductChange={fetchData} />
-          )}
+          {activeSection === "products" && <StoreProductsSection onProductChange={fetchData} />}
 
           {activeSection === "analytics" && <AnalyticsSection />}
 
-          {activeSection === "users" && (
-            <CustomersSection
-              profiles={profiles}
-              isLoading={isLoading}
-            />
-          )}
+          {activeSection === "users" && <CustomersSection profiles={profiles} isLoading={isLoading} />}
 
           {activeSection === "newsletter" && <NewsletterSection />}
 
-          {activeSection === "settings" && (
-            <div className="space-y-6">
+          {activeSection === "settings" && <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">Settings</h2>
                 <p className="text-muted-foreground">Store configuration</p>
@@ -291,12 +238,9 @@ const Admin = () => {
               <div className="bg-card rounded-2xl border border-border/50 p-8 text-center">
                 <p className="text-muted-foreground">Settings section coming soon...</p>
               </div>
-            </div>
-          )}
+            </div>}
         </main>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Admin;
