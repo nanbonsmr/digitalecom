@@ -114,70 +114,73 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
+            {/* Mobile Search Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(true)}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+
             {/* Theme Toggle */}
             <ThemeToggle />
             
             {/* Cart */}
             <CartSheet />
 
-            {/* Auth Buttons - Desktop */}
-            <div className="hidden sm:flex items-center gap-2">
-              {loading ? (
-                <div className="w-8 h-8 rounded-full bg-secondary animate-pulse"></div>
-              ) : user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                        <AvatarFallback className="bg-primary text-primary-foreground">
-                          {getInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <div className="flex items-center justify-start gap-2 p-2">
-                      <div className="flex flex-col space-y-1 leading-none">
-                        {profile?.display_name && (
-                          <p className="font-medium">{profile.display_name}</p>
-                        )}
-                        <p className="text-sm text-muted-foreground truncate">{user.email}</p>
-                      </div>
+            {/* Profile/Auth - Always visible */}
+            {loading ? (
+              <div className="w-8 h-8 rounded-full bg-secondary animate-pulse"></div>
+            ) : user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-popover border border-border shadow-lg z-50">
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      {profile?.display_name && (
+                        <p className="font-medium">{profile.display_name}</p>
+                      )}
+                      <p className="text-sm text-muted-foreground truncate">{user.email}</p>
                     </div>
-                    <DropdownMenuSeparator />
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  {isAdmin && (
                     <DropdownMenuItem asChild>
-                      <Link to="/profile" className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
+                      <Link to="/admin" className="cursor-pointer">
+                        <Store className="mr-2 h-4 w-4" />
+                        Store Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin" className="cursor-pointer">
-                          <Store className="mr-2 h-4 w-4" />
-                          Store Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
-                    <Link to="/auth">Login</Link>
-                  </Button>
-                  <Button size="sm" className="btn-gradient-primary rounded-full px-5" asChild>
-                    <Link to="/auth">Sign Up</Link>
-                  </Button>
-                </>
-              )}
-            </div>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button size="sm" className="btn-gradient-primary rounded-full px-4" asChild>
+                <Link to="/auth">Login</Link>
+              </Button>
+            )}
 
             {/* Mobile Menu Toggle */}
             <Button
