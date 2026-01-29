@@ -49,26 +49,7 @@ import ProductRow from "@/components/seller/ProductRow";
 import SalesChart from "@/components/seller/SalesChart";
 import ProductForm from "@/components/seller/ProductForm";
 
-// Mock data for orders and reviews
-const mockOrders = [
-  { id: "ORD-001", productName: "Premium UI Kit Bundle", buyerEmail: "john@example.com", date: "Jan 28, 2026", price: 49.99, status: "paid" as const, downloads: 3 },
-  { id: "ORD-002", productName: "Business Plan Template", buyerEmail: "sarah@company.io", date: "Jan 27, 2026", price: 29.99, status: "paid" as const, downloads: 1 },
-  { id: "ORD-003", productName: "Icon Pack Pro", buyerEmail: "mike@design.co", date: "Jan 26, 2026", price: 19.99, status: "refunded" as const, downloads: 0 },
-  { id: "ORD-004", productName: "Social Media Templates", buyerEmail: "emma@startup.com", date: "Jan 25, 2026", price: 24.99, status: "paid" as const, downloads: 2 },
-  { id: "ORD-005", productName: "Resume Builder Pack", buyerEmail: "alex@job.org", date: "Jan 24, 2026", price: 14.99, status: "pending" as const, downloads: 0 },
-];
-
-const mockReviews = [
-  { id: "1", rating: 5, comment: "Absolutely amazing templates! Saved me hours of work. The quality is outstanding.", productName: "Premium UI Kit Bundle", buyerName: "John Doe", date: "2 days ago" },
-  { id: "2", rating: 4, comment: "Great value for money. Would recommend to anyone looking for professional templates.", productName: "Business Plan Template", buyerName: "Sarah Smith", date: "3 days ago" },
-  { id: "3", rating: 5, comment: "Perfect icons, exactly what I needed for my project. Very well organized!", productName: "Icon Pack Pro", buyerName: "Mike Johnson", date: "5 days ago" },
-];
-
-const mockProducts = [
-  { id: "1", title: "Premium UI Kit Bundle", thumbnail: undefined, price: 49.99, downloads: 234, status: "active" as const },
-  { id: "2", title: "Business Plan Template", thumbnail: undefined, price: 29.99, downloads: 156, status: "active" as const },
-  { id: "3", title: "Icon Pack Pro", thumbnail: undefined, price: 19.99, downloads: 89, status: "draft" as const },
-];
+// Stats will be calculated from real data
 
 interface Product {
   id: string;
@@ -171,20 +152,22 @@ const SellerDashboard = () => {
     );
   }
 
-  const displayProducts = products.length > 0 ? products.map(p => ({
+  // Calculate real stats from products
+  const displayProducts = products.map(p => ({
     id: p.id,
     title: p.title,
     thumbnail: p.thumbnail_url || undefined,
     price: p.price,
     downloads: p.download_count || 0,
     status: p.is_published ? "active" as const : "draft" as const,
-  })) : mockProducts;
+  }));
 
   const stats = {
-    totalSales: products.length > 0 ? products.reduce((sum, p) => sum + (p.download_count || 0), 0) : 156,
-    totalEarnings: products.length > 0 ? products.reduce((sum, p) => sum + ((p.download_count || 0) * p.price), 0) : 4523.50,
-    activeProducts: products.length > 0 ? products.filter(p => p.is_published).length : 8,
-    pendingOrders: 3,
+    totalSales: products.reduce((sum, p) => sum + (p.download_count || 0), 0),
+    totalEarnings: products.reduce((sum, p) => sum + ((p.download_count || 0) * p.price), 0),
+    activeProducts: products.filter(p => p.is_published).length,
+    draftProducts: products.filter(p => !p.is_published).length,
+    totalProducts: products.length,
   };
 
   return (
@@ -321,10 +304,9 @@ const SellerDashboard = () => {
               trend={{ value: 2, isPositive: true }}
             />
             <StatCard
-              title="Pending Orders"
-              value={stats.pendingOrders}
+              title="Draft Products"
+              value={stats.draftProducts}
               icon={Clock}
-              trend={{ value: 5, isPositive: false }}
             />
           </div>
 
@@ -398,11 +380,26 @@ const SellerDashboard = () => {
             </div>
           </div>
 
-          {/* Orders Table */}
-          <OrderTable
-            orders={mockOrders}
-            onViewOrder={(id) => toast({ title: `Viewing order ${id}` })}
-          />
+          {/* Orders Section - Placeholder for future orders */}
+          {displayProducts.length === 0 && !isLoadingProducts ? (
+            <div className="bg-card rounded-2xl border border-border/50 shadow-sm p-8 text-center">
+              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No Products Yet</h3>
+              <p className="text-muted-foreground mb-4">
+                Start by uploading your first digital product to see your dashboard come to life.
+              </p>
+              <Button
+                className="btn-gradient-primary"
+                onClick={() => {
+                  setEditingProduct(null);
+                  setIsProductFormOpen(true);
+                }}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Your First Product
+              </Button>
+            </div>
+          ) : null}
 
           {/* Products + Reviews Grid */}
           <div className="grid lg:grid-cols-2 gap-6">
@@ -424,15 +421,21 @@ const SellerDashboard = () => {
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
                   </div>
-                ) : displayProducts.slice(0, 3).map((product) => (
-                  <ProductRow
-                    key={product.id}
-                    product={product}
-                    onEdit={handleEditProduct}
-                    onDelete={handleDeleteProduct}
-                    onView={(id) => navigate(`/product/${id}`)}
-                  />
-                ))}
+                ) : displayProducts.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No products yet. Upload your first one!</p>
+                  </div>
+                ) : (
+                  displayProducts.slice(0, 3).map((product) => (
+                    <ProductRow
+                      key={product.id}
+                      product={product}
+                      onEdit={handleEditProduct}
+                      onDelete={handleDeleteProduct}
+                      onView={(id) => navigate(`/product/${id}`)}
+                    />
+                  ))
+                )}
               </div>
             </div>
 
@@ -450,13 +453,9 @@ const SellerDashboard = () => {
                 </Button>
               </div>
               <div className="p-4 space-y-3">
-                {mockReviews.map((review) => (
-                  <ReviewCard
-                    key={review.id}
-                    review={review}
-                    onReply={(id) => toast({ title: `Replying to review ${id}` })}
-                  />
-                ))}
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Reviews will appear here once customers purchase your products.</p>
+                </div>
               </div>
             </div>
           </div>
