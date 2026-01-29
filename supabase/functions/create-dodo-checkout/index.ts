@@ -36,12 +36,8 @@ serve(async (req) => {
       throw new Error('DODO_PAYMENTS_API_KEY is not configured');
     }
 
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_PUBLISHABLE_KEY');
-    
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      throw new Error('Supabase environment variables not configured');
-    }
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
 
     // Verify authentication
     const authHeader = req.headers.get('Authorization');
