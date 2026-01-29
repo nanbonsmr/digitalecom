@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/marketplace/Navbar";
 import Footer from "@/components/marketplace/Footer";
+import CheckoutSuccess from "@/components/checkout/CheckoutSuccess";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -63,24 +64,7 @@ const Checkout = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container py-16">
-          <div className="max-w-md mx-auto text-center">
-            <div className="h-20 w-20 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-6">
-              <Check className="h-10 w-10 text-success" />
-            </div>
-            <h1 className="text-3xl font-bold mb-4">Thank you for your purchase!</h1>
-            <p className="text-muted-foreground mb-8">
-              Your order has been confirmed. You can download your digital products
-              from your profile or the links sent to your email.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button asChild>
-                <Link to="/profile">Go to Profile</Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link to="/">Continue Shopping</Link>
-              </Button>
-            </div>
-          </div>
+          <CheckoutSuccess />
         </div>
         <Footer />
       </div>
