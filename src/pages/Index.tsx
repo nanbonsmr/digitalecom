@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Download,
@@ -32,6 +34,8 @@ import CategoryPill from "@/components/marketplace/CategoryPill";
 import BundleCard from "@/components/marketplace/BundleCard";
 import FeatureCard from "@/components/marketplace/FeatureCard";
 import TestimonialCard from "@/components/marketplace/TestimonialCard";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 // Import images
 import heroMockup from "@/assets/hero-mockup.jpg";
@@ -47,7 +51,45 @@ import productIcons from "@/assets/product-icons.jpg";
 import productPitch from "@/assets/product-pitch.jpg";
 import productResume from "@/assets/product-resume.jpg";
 
+interface DbProduct {
+  id: string;
+  title: string;
+  price: number;
+  original_price: number | null;
+  category: string;
+  thumbnail_url: string | null;
+  is_free: boolean;
+  download_count: number;
+}
+
 const Index = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [dbProducts, setDbProducts] = useState<DbProduct[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, title, price, original_price, category, thumbnail_url, is_free, download_count")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false })
+        .limit(8);
+
+      if (error) throw error;
+      setDbProducts(data || []);
+    } catch (error: any) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
   const categories = [
     { label: "Business Templates", icon: <Briefcase className="h-4 w-4" /> },
     { label: "CV / Resume", icon: <FileText className="h-4 w-4" /> },
@@ -353,16 +395,43 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Product Grid */}
+          {/* Product Grid - Show DB products if available, otherwise show demo products */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard
-                key={product.title}
-                {...product}
-                onAddToCart={() => console.log("Add to cart:", product.title)}
-                onViewDetails={() => console.log("View details:", product.title)}
-              />
-            ))}
+            {dbProducts.length > 0
+              ? dbProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    creator="Seller"
+                    price={product.price}
+                    originalPrice={product.original_price || undefined}
+                    rating={4.5}
+                    reviewCount={product.download_count}
+                    image={product.thumbnail_url || productBusinessPlan}
+                    isFree={product.is_free}
+                    onAddToCart={() => {
+                      toast({
+                        title: "Added to cart",
+                        description: `${product.title} has been added to your cart.`,
+                      });
+                    }}
+                    onViewDetails={() => navigate(`/product/${product.id}`)}
+                  />
+                ))
+              : products.map((product) => (
+                  <ProductCard
+                    key={product.title}
+                    {...product}
+                    onAddToCart={() => {
+                      toast({
+                        title: "Added to cart",
+                        description: `${product.title} has been added to your cart.`,
+                      });
+                    }}
+                    onViewDetails={() => console.log("View details:", product.title)}
+                  />
+                ))}
           </div>
 
           {/* View All Button */}
