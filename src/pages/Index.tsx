@@ -12,26 +12,17 @@ import {
   Upload,
   DollarSign,
   BarChart3,
-  Briefcase,
-  FileText,
-  Scale,
-  Palette,
-  BookOpen,
   Package,
-  Gift,
   TrendingUp,
-  Clock,
-  Star as StarIcon,
   Zap,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 import Navbar from "@/components/marketplace/Navbar";
 import Footer from "@/components/marketplace/Footer";
 import ProductCard from "@/components/marketplace/ProductCard";
-import CategoryPill from "@/components/marketplace/CategoryPill";
+import FeaturedCategories from "@/components/marketplace/FeaturedCategories";
 
 import FeatureCard from "@/components/marketplace/FeatureCard";
 import TestimonialCard from "@/components/marketplace/TestimonialCard";
@@ -74,8 +65,6 @@ const Index = () => {
     totalProducts: 0,
     totalSellers: 0,
   });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -146,32 +135,6 @@ const Index = () => {
     }
   };
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      toast({
-        title: "Search",
-        description: `Searching for "${searchQuery}"...`,
-      });
-    }
-  };
-
-  const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category === selectedCategory ? null : category);
-    toast({
-      title: "Category Selected",
-      description: `Filtering by "${category}"`,
-    });
-  };
-
-  const categories = [
-    { label: "Business Templates", icon: <Briefcase className="h-4 w-4" /> },
-    { label: "CV / Resume", icon: <FileText className="h-4 w-4" /> },
-    { label: "Legal Docs", icon: <Scale className="h-4 w-4" /> },
-    { label: "Design Assets", icon: <Palette className="h-4 w-4" /> },
-    { label: "Ebooks", icon: <BookOpen className="h-4 w-4" /> },
-    { label: "Bundles", icon: <Package className="h-4 w-4" /> },
-    { label: "Free Downloads", icon: <Gift className="h-4 w-4" /> },
-  ];
 
   // Empty state message when no products
   const emptyStateMessage = {
@@ -330,6 +293,8 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Featured Categories Section */}
+      <FeaturedCategories />
 
       {/* Featured Products Section */}
       <section id="products" className="py-16 lg:py-20">
