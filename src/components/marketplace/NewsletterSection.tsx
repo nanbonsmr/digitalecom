@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Mail, Sparkles, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { z } from "zod";
 
 const emailSchema = z.string().trim().email({ message: "Please enter a valid email address" });
 
-const NewsletterSection = () => {
+const NewsletterSection = forwardRef<HTMLElement>((_, ref) => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -66,7 +66,7 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="py-10 md:py-16 lg:py-20 bg-primary/5 border-y border-border">
+    <section ref={ref} className="py-10 md:py-16 lg:py-20 bg-primary/5 border-y border-border">
       <div className="container px-4">
         <div className="max-w-2xl mx-auto text-center">
           {/* Icon */}
@@ -137,6 +137,8 @@ const NewsletterSection = () => {
       </div>
     </section>
   );
-};
+});
+
+NewsletterSection.displayName = "NewsletterSection";
 
 export default NewsletterSection;
