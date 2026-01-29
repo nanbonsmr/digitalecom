@@ -24,6 +24,7 @@ interface Product {
   original_price: number | null;
   category: string;
   thumbnail_url: string | null;
+  file_url: string | null;
   is_free: boolean;
   is_published: boolean;
 }
@@ -66,7 +67,8 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
   const [isFree, setIsFree] = useState(product?.is_free || false);
   const [isPublished, setIsPublished] = useState(product?.is_published || false);
   const [thumbnailUrl, setThumbnailUrl] = useState(product?.thumbnail_url || "");
-  const [fileName, setFileName] = useState("");
+  const [fileUrl, setFileUrl] = useState(product?.file_url || "");
+  const [fileName, setFileName] = useState(product?.file_url ? "Existing file" : "");
 
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -148,6 +150,8 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
 
       if (uploadError) throw uploadError;
 
+      // Store the file path for database
+      setFileUrl(uploadFileName);
       setFileName(file.name);
 
       toast({
@@ -198,6 +202,7 @@ const ProductForm = ({ product, onSuccess, onCancel }: ProductFormProps) => {
         original_price: originalPrice ? parseFloat(originalPrice) : null,
         category,
         thumbnail_url: thumbnailUrl || null,
+        file_url: fileUrl || null,
         is_free: isFree,
         is_published: isPublished,
       };
