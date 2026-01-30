@@ -30,8 +30,14 @@ const Checkout = () => {
   
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Check if returning from successful payment
-  const paymentSuccess = searchParams.get('payment') === 'success';
+  // Check payment status from URL params
+  const paymentParam = searchParams.get('payment');
+  const paymentStatus = searchParams.get('status');
+  const paymentId = searchParams.get('payment_id');
+  
+  // Payment is successful only if payment=success AND status is not 'failed'
+  const paymentSuccess = paymentParam === 'success' && paymentStatus !== 'failed';
+  const paymentFailed = paymentStatus === 'failed';
 
   // Redirect if not logged in
   if (!user) {
@@ -47,6 +53,38 @@ const Checkout = () => {
           <Button asChild>
             <Link to="/auth">Sign In</Link>
           </Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Show failed payment message
+  if (paymentFailed) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container py-16 text-center max-w-lg mx-auto">
+          <div className="h-20 w-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-6">
+            <CreditCard className="h-10 w-10 text-destructive" />
+          </div>
+          <h1 className="text-3xl font-bold mb-4">Payment Failed</h1>
+          <p className="text-muted-foreground mb-8">
+            Unfortunately, your payment could not be processed. Please try again or use a different payment method.
+          </p>
+          {paymentId && (
+            <p className="text-sm text-muted-foreground mb-6">
+              Reference: {paymentId}
+            </p>
+          )}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={() => navigate('/checkout')} className="btn-gradient-primary">
+              Try Again
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/">Continue Shopping</Link>
+            </Button>
+          </div>
         </div>
         <Footer />
       </div>
