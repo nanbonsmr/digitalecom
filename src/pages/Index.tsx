@@ -152,7 +152,7 @@ const Index = () => {
       role: "Startup Founder",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
       feedback:
-        "DigitalHub saved me weeks of work. The business plan template was exactly what I needed to secure funding for my startup.",
+        "ZyroBay saved me weeks of work. The business plan template was exactly what I needed to secure funding for my startup.",
       rating: 5,
     },
     {
@@ -412,7 +412,7 @@ const Index = () => {
         <div className="container px-4">
           <div className="text-center mb-8 md:mb-12">
             <span className="text-xs md:text-sm font-medium text-primary uppercase tracking-wide">
-              Why DigitalHub
+              Why ZyroBay
             </span>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mt-1 md:mt-2">
               Built for Creators & Businesses

@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CartSheet } from "@/components/cart/CartSheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import zyrobayLogo from "@/assets/zyrobay-logo.png";
 
 export const Navbar = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
@@ -78,11 +79,8 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
       <div className="container">
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">D</span>
-            </div>
-            <span className="font-bold text-xl text-foreground hidden sm:block">DigitalHub</span>
+          <Link to="/" className="flex items-center shrink-0">
+            <img src={zyrobayLogo} alt="ZyroBay" className="h-8 sm:h-10" />
           </Link>
 
           {/* Desktop Navigation */}
