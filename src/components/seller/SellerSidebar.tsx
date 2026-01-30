@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import zyrobayLogo from "@/assets/zyrobay-logo.png";
 
 interface SellerSidebarProps {
   isCollapsed: boolean;
@@ -52,11 +53,8 @@ export const SellerSidebar = ({
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-border">
         {!isCollapsed && (
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">D</span>
-            </div>
-            <span className="font-bold text-lg text-foreground">DigitalHub</span>
+          <Link to="/" className="flex items-center">
+            <img src={zyrobayLogo} alt="ZyroBay" className="h-8" />
           </Link>
         )}
         <Button

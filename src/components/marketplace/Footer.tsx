@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import zyrobayLogo from "@/assets/zyrobay-logo.png";
 
 const footerLinks = {
   categories: [
@@ -48,11 +49,8 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 md:gap-10">
           {/* Brand & Newsletter */}
           <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-2">
-            <a href="#" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">D</span>
-              </div>
-              <span className="font-bold text-xl text-white">DigitalHub</span>
+            <a href="#" className="flex items-center mb-4">
+              <img src={zyrobayLogo} alt="ZyroBay" className="h-10" />
             </a>
             <p className="text-sm mb-6 text-muted-foreground/80">
               The ultimate marketplace for premium digital products. Download templates, ebooks, design assets, and more.
@@ -148,7 +146,7 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
         {/* Bottom Bar */}
         <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs md:text-sm text-muted-foreground/70 text-center sm:text-left">
-            © {new Date().getFullYear()} DigitalHub. All rights reserved.
+            © {new Date().getFullYear()} ZyroBay. All rights reserved.
           </p>
           <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm">
             <span className="text-muted-foreground/70 hidden sm:inline">Accepted Payments:</span>
