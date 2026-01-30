@@ -50,7 +50,7 @@ export const Footer = forwardRef<HTMLElement>((_, ref) => {
           {/* Brand & Newsletter */}
           <div className="col-span-2 sm:col-span-2 md:col-span-3 lg:col-span-2">
             <a href="#" className="flex items-center mb-4">
-              <img src={zyrobayLogo} alt="ZyroBay" className="h-10" />
+              <img src={zyrobayLogo} alt="ZyroBay" className="h-12" />
             </a>
             <p className="text-sm mb-6 text-muted-foreground/80">
               The ultimate marketplace for premium digital products. Download templates, ebooks, design assets, and more.
