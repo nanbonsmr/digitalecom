@@ -54,7 +54,7 @@ export const SellerSidebar = ({
       <div className="h-16 flex items-center justify-between px-4 border-b border-border">
         {!isCollapsed && (
           <Link to="/" className="flex items-center">
-            <img src={zyrobayLogo} alt="ZyroBay" className="h-8" />
+            <img src={zyrobayLogo} alt="ZyroBay" className="h-10" />
           </Link>
         )}
         <Button

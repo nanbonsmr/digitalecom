@@ -80,7 +80,7 @@ export const Navbar = forwardRef<HTMLElement>((_, ref) => {
         <div className="flex items-center justify-between h-16 lg:h-18">
           {/* Logo */}
           <Link to="/" className="flex items-center shrink-0">
-            <img src={zyrobayLogo} alt="ZyroBay" className="h-8 sm:h-10" />
+            <img src={zyrobayLogo} alt="ZyroBay" className="h-10 sm:h-12" />
           </Link>
 
           {/* Desktop Navigation */}
